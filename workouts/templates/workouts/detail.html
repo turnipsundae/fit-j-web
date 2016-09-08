@@ -1,0 +1,6 @@
+<h1>{{ routine.routine_text }}</h1>
+<ul>
+{% for exercise in routine.exercise_set.all %}
+    <li>{{ exercise.exercise_text }}</li>
+{% endfor %}
+</ul>

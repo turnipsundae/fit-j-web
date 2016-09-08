@@ -1,0 +1,9 @@
+{% if latest_routine_list %}
+    <ul>
+    {% for routine in latest_routine_list %}
+        <li><a href="/workouts/{{ routine.id }}/">{{ routine.routine_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No routines are available.</p>
+{% endif %}
