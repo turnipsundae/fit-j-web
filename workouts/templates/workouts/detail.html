@@ -4,3 +4,10 @@
     <li>{{ exercise.exercise_text }}</li>
 {% endfor %}
 </ul>
+
+<div>
+<form method="post">
+  {% csrf_token %}
+  <input type="submit" value="Delete"/>
+</form>
+</div>

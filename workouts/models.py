@@ -4,7 +4,16 @@ from django.utils import timezone
 import datetime
 
 # Create your models here.
+class Routine(models.Model):
+  routine_text = models.CharField(max_length=200)
+  pub_date = models.DateTimeField('date published')
+  likes = models.IntegerField(default=0)
+  def __str__(self):
+    return self.routine_text
+  
+
 class Exercise(models.Model):
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   exercise_text = models.CharField(max_length=200)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
@@ -14,17 +23,9 @@ class Exercise(models.Model):
     return self.exercise_text
 
 
-class Routine(models.Model):
-  routine_text = models.CharField(max_length=200)
-  pub_date = models.DateTimeField('date published')
-  likes = models.IntegerField(default=0)
-  exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-  def __str__(self):
-    return self.routine_text
-  
 
 class Comment(models.Model):
-  exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   comment_text = models.CharField(max_length=200)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)

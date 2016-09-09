@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import reverse
+from django.utils import timezone
 
 from .models import Routine
 
@@ -19,3 +21,13 @@ def like(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   return render(request, 'workouts/detail.html', {'routine': routine})
+
+def new_routine(request):
+  try:
+    new_routine = request.POST['new_routine']
+  except (KeyError, Routine.DoesNotExist):
+    return render(request, 'workouts/new_routine.html')
+  else:
+    r = Routine(routine_text=new_routine, pub_date=timezone.now())
+    r.save()
+    return HttpResponseRedirect(reverse('workouts:index'))
