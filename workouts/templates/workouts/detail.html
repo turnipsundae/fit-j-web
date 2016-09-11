@@ -1,4 +1,5 @@
 <h1>{{ routine.routine_text }}</h1>
+<a href="{% url 'workouts:add_exercise' routine.id %}">Add exercise</a>
 <ul>
 {% for exercise in routine.exercise_set.all %}
     <li>{{ exercise.exercise_text }}</li>
@@ -8,6 +9,6 @@
 <div>
 <form method="post">
   {% csrf_token %}
-  <input type="submit" value="Delete"/>
+  <input type="submit" value="Delete routine"/>
 </form>
 </div>

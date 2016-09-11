@@ -1,0 +1,10 @@
+<h1>Add a new routine</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'workouts:add_routine' %}" method="post">
+{% csrf_token %}
+  <label for="routine1">Name</label>
+  <input type="text" name="add_routine" id="routine1"/>
+  <input type="submit" value="Add"/>
+</form>
