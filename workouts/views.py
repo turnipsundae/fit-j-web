@@ -1,13 +1,14 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
+from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 
 from .models import Routine
 
 # Create your views here.
-#def base(request):
- # return render(request, 'workouts/base.html')
+def base(request):
+  return render(request, 'workouts/base.html')
 
 def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
@@ -19,7 +20,15 @@ def results(request, routine_id):
   return HttpResponse(response % routine_id)
 
 def like(request, routine_id):
-  return HttpResponse("You're adding a +1 to routine %s." % routine_id)
+  routine = get_object_or_404(Routine, pk=routine_id)
+  if request.method == "POST":
+    routine.likes = F('likes') + 1
+    routine.save()
+    return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
+  else:
+    return render(request, 'workouts/like.html', {
+      'routine':routine,
+    })
 
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)

@@ -1,0 +1,12 @@
+{% extends "./base.html" %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% block content %}
+<h1>Would you like to upvote {{routine.routine_text}}?</h1>
+
+<form method="post">
+{% csrf_token %}
+  <input type="submit" value="Upvote"/>
+</form>
+{% endblock content %}
