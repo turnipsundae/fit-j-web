@@ -6,6 +6,8 @@ app_name = 'workouts'
 urlpatterns = [
   # e.g. /workouts
   url(r'^$', views.index, name='index'),
+  # e.g. /base
+  url(r'^base/$', views.base, name='base'),
   # e.g. /workouts/2
   url(r'^(?P<routine_id>[0-9]+)/$', views.detail, name='detail'),
   # e.g. /workouts/2/results

@@ -1,3 +1,6 @@
+{% extends "./base.html" %}
+
+{% block content %}
 <h1>{{ routine.routine_text }}</h1>
 <a href="{% url 'workouts:add_exercise' routine.id %}">Add exercise</a>
 <ul>
@@ -12,3 +15,4 @@
   <input type="submit" value="Delete routine"/>
 </form>
 </div>
+{% endblock content %}

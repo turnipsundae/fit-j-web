@@ -6,6 +6,9 @@ from django.utils import timezone
 from .models import Routine
 
 # Create your views here.
+#def base(request):
+ # return render(request, 'workouts/base.html')
+
 def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
   context = {'latest_routine_list': latest_routine_list}

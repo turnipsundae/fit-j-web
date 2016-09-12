@@ -1,3 +1,6 @@
+{% extends "./base.html" %}
+
+{% block content %}
 <h1>Workout Index</h1>
 <p><a href="{% url 'workouts:add_routine' %}">Add routine</a></p>
 
@@ -10,3 +13,4 @@
 {% else %}
     <p>No routines are available.</p>
 {% endif %}
+{% endblock content %}
