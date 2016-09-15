@@ -52,13 +52,9 @@ def add_routine(request):
     r = Routine(routine_text=routine_text, pub_date=timezone.now())
     r.save()
     if request.POST['exercise_text']:
-      print ("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
       exercises = parse_exercises(request.POST['exercise_text'])
-      print ("BBBBBBBBBBBBBBBBBBBBBBBBBBBB")
       for exercise in exercises:
-        print ("CCCCCCCCCCCCCCCCCCCCCCCCCC")
         r.exercise_set.create(exercise_text=exercise, pub_date=timezone.now())
-        print ("DDDDDDDDDDDDDDDDDDDDDDDDDD")
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
     return render(request, 'workouts/add_routine.html', {
