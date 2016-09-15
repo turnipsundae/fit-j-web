@@ -41,13 +41,24 @@ def detail(request, routine_id):
       'routine': routine,
     })
 
+def parse_exercises(exercises):
+	return exercises.split("\r\n")
+
 def add_routine(request):
   if request.method == 'GET':
     return render(request, 'workouts/add_routine.html')
-  elif request.method == 'POST' and request.POST['add_routine']:
-    add_routine = request.POST['add_routine']
-    r = Routine(routine_text=add_routine, pub_date=timezone.now())
+  elif request.method == 'POST' and request.POST['routine_text']:
+    routine_text = request.POST['routine_text']
+    r = Routine(routine_text=routine_text, pub_date=timezone.now())
     r.save()
+    if request.POST['exercise_text']:
+      print ("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+      exercises = parse_exercises(request.POST['exercise_text'])
+      print ("BBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+      for exercise in exercises:
+        print ("CCCCCCCCCCCCCCCCCCCCCCCCCC")
+        r.exercise_set.create(exercise_text=exercise, pub_date=timezone.now())
+        print ("DDDDDDDDDDDDDDDDDDDDDDDDDD")
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
     return render(request, 'workouts/add_routine.html', {

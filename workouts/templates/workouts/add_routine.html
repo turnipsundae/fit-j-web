@@ -4,7 +4,14 @@
 
 <form action="{% url 'workouts:add_routine' %}" method="post">
 {% csrf_token %}
-  <label for="routine1">Name</label>
-  <input type="text" name="add_routine" id="routine1"/>
-  <input type="submit" value="Add"/>
+  <div>
+  <label for="routine_text">Name</label></br>
+  <input type="text" name="routine_text" id="routine_text"/>
+  </div>
+
+  <div>
+  <label for="exercise_text">Exercises (separate with new line)</label></br>
+  <textarea name="exercise_text" style="height: 200px; width: 400px;">{{exercise_text}}</textarea>
+  </div>
+  <input type="submit" value="Add routine"/>
 </form>

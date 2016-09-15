@@ -1,0 +1,11 @@
+# fit-j
+fitness social network
+
+TODO
+1. Create placeholder views
+2. Design tests for posting new workout
+3. Create dummy new workout
+4. Enable posting new workouts from forms
+5. Create feed
+6. Add upvote capability
+7.
