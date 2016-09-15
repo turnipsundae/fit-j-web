@@ -1,3 +1,6 @@
+{% extends "./base.html" %}
+
+{% block content %}
 <h1>Add a new routine</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -15,3 +18,4 @@
   </div>
   <input type="submit" value="Add routine"/>
 </form>
+{% endblock %}

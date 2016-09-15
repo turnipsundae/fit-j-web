@@ -1,10 +1,16 @@
+{% extends "./base.html" %}
+
+{% block content %}
 <h1>Add a new exercise</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <form method="post">
 {% csrf_token %}
-  <label for="exercise1">Name</label>
-  <input type="text" name="add_exercise" id="exercise1"/>
-  <input type="submit" value="Add"/>
+  <div>
+  <label for="exercise_text">Exercises (separate with new line)</label></br>
+  <textarea name="exercise_text" style="height: 200px; width: 400px;">{{exercise_text}}</textarea>
+  </div>
+  <input type="submit" value="Add exercise"/>
 </form>
+{% endblock %}

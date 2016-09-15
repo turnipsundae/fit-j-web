@@ -64,10 +64,11 @@ def add_routine(request):
 def add_exercise(request, routine_id):
   if request.method == 'GET':
     return render(request, 'workouts/add_exercise.html')
-  elif request.method == 'POST' and request.POST['add_exercise']:
-    add_exercise = request.POST['add_exercise']
-    routine = get_object_or_404(Routine, pk=routine_id)
-    routine.exercise_set.create(exercise_text=add_exercise, pub_date=timezone.now())
+  elif request.method == 'POST' and request.POST['exercise_text']:
+    exercises = parse_exercises(request.POST['exercise_text'])
+    r = get_object_or_404(Routine, pk=routine_id)
+    for exercise in exercises:
+      r.exercise_set.create(exercise_text=exercise, pub_date=timezone.now())
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
   else:
     return render(request, 'workouts/add_exercise.html', {
