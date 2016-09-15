@@ -12,7 +12,7 @@ def base(request):
 
 def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
-  context = {'latest_routine_list': latest_routine_list}
+  context = {'routine_list': latest_routine_list}
   return render(request, 'workouts/index.html', context)
 
 def results(request, routine_id):
@@ -74,3 +74,14 @@ def add_exercise(request, routine_id):
     return render(request, 'workouts/add_exercise.html', {
       'error_message': "You didn't enter a name"
     })
+
+def sort_by_likes(request):
+  highest_likes_routine_list = Routine.objects.order_by('-likes')[:10]
+  context = {'routine_list': highest_likes_routine_list}
+  return render(request, 'workouts/index.html', context)
+
+def trending(request):
+  trending_list = Routine.objects.order_by('-pub_date')[:10]
+  context = {'routine_list': trending_list}
+  return render(request, 'workouts/index.html', context)
+  

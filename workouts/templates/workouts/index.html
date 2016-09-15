@@ -4,9 +4,9 @@
 <h1>Workout Index</h1>
 <p><a href="{% url 'workouts:add_routine' %}">Add routine</a></p>
 
-{% if latest_routine_list %}
+{% if routine_list %}
     <ul>
-    {% for routine in latest_routine_list %}
+    {% for routine in routine_list %}
         <li><a href="{% url 'workouts:detail' routine.id %}">{{ routine.routine_text }}</a><span>  {{ routine.likes }}</span></li>
     {% endfor %}
     </ul>

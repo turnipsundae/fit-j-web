@@ -10,7 +10,8 @@
       {% block sidebar %}
       <ul>
         <li><a href="{% url 'workouts:index' %}">Home</a></li>
-        <li>Top 5 workouts</li>
+        <li><a href="{% url 'workouts:sort_by_likes' %}">Top 10</a></li>
+        <li><a href="{% url 'workouts:trending' %}">Trending</a></li>
       </ul>
       {% endblock sidebar %}
     </div>

@@ -8,6 +8,8 @@ urlpatterns = [
   url(r'^$', views.index, name='index'),
   # e.g. /base
   url(r'^base/$', views.base, name='base'),
+  # e.g. /trending
+  url(r'^trending/$', views.trending, name='trending'),
   # e.g. /workouts/2
   url(r'^(?P<routine_id>[0-9]+)/$', views.detail, name='detail'),
   # e.g. /workouts/2/results
@@ -20,5 +22,7 @@ urlpatterns = [
   url(r'^(?P<routine_id>[0-9]+)/add/exercise/$', views.add_exercise, name='add_exercise'),
   # e.g. /workouts/2/like
   url(r'^(?P<routine_id>[0-9]+)/like/$', views.like, name='like'),
+  # e.g. /workouts/sort_by_likes
+  url(r'^sort_by_likes/$', views.sort_by_likes, name='sort_by_likes'),
 
 ]
