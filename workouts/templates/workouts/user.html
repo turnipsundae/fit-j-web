@@ -1,0 +1,16 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h1>User Index</h1>
+<p><a href="{% url 'workouts:add_user' %}">Add user</a></p>
+
+{% if list %}
+    <ul>
+    {% for user in list %}
+        <li>{{ user.username }}<span></span></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No users are available.</p>
+{% endif %}
+{% endblock content %}

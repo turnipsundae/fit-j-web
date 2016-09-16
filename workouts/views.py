@@ -4,7 +4,7 @@ from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Routine
+from .models import Routine, User
 
 # Create your views here.
 def base(request):
@@ -85,3 +85,10 @@ def trending(request):
   context = {'routine_list': trending_list}
   return render(request, 'workouts/index.html', context)
   
+def user(request):
+  user_list = User.objects.all()
+  context = {'list': user_list}
+  return render(request, 'workouts/user.html', context)
+
+def add_user(request):
+  return HttpResponse("Add new user here")
