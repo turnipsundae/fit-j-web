@@ -30,4 +30,11 @@ class Comment(models.Model):
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
   def __str__(self):
-    self.comment_text
+    return self.comment_text
+
+class User(models.Model):
+  username = models.CharField(max_length=50)
+  create_date = models.DateTimeField('date created')
+  followers = models.ForeignKey("self", null=True, blank=True, default=None)
+  def __str__(self):
+    return self.username
