@@ -8,10 +8,14 @@ urlpatterns = [
   url(r'^$', views.index, name='index'),
   # e.g. /workouts/base
   url(r'^base/$', views.base, name='base'),
-  # e.g. workouts/trending
+  # e.g. /workouts/trending
   url(r'^trending/$', views.trending, name='trending'),
-  # e.g. workouts/user
+  # e.g. /workouts/user
   url(r'^user/$', views.user, name='user'),
+  # e.g. /workouts/user/2
+  url(r'^user/(?P<user_id>[0-9]+)/$', views.user_detail, name='user_detail'),
+  # e.g. /workouts/user/2/follow
+  url(r'^user/(?P<user_id>[0-9]+)/follow/$', views.follow_user, name='follow_user'),
   # e.g. /workouts/2
   url(r'^(?P<routine_id>[0-9]+)/$', views.detail, name='detail'),
   # e.g. /workouts/2/results

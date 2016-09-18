@@ -35,6 +35,16 @@ class Comment(models.Model):
 class User(models.Model):
   username = models.CharField(max_length=50)
   create_date = models.DateTimeField('date created')
-  followers = models.ForeignKey("self", null=True, blank=True, default=None)
+  #followers = models.ForeignKey("self", null=True, blank=True, default=None)
+  def count_followers(self):
+    return Follower.objects.filter(user=self.id).count()
   def __str__(self):
     return self.username
+
+class Follower(models.Model):
+  user = models.ForeignKey(User, related_name="user")
+  follower = models.ForeignKey(User, related_name="follower")
+  create_date = models.DateTimeField('date created')
+  def __str__(self):
+    return self.user.username
+

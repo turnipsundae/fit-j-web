@@ -90,5 +90,51 @@ def user(request):
   context = {'list': user_list}
   return render(request, 'workouts/user.html', context)
 
+def user_detail(request, user_id):
+  user = get_object_or_404(User, pk=user_id)
+  return render(request, 'workouts/user_detail.html', {
+    'user': user,
+  })
+
+def follow_user(request, user_id):
+  user = get_object_or_404(User, pk=user_id)
+  user_list = User.objects.all()
+  currently_following = user.follower.values_list("user", flat=True)
+  if request.method == 'GET':
+    """
+    # TODO replace with forms
+    for each in user_dict:
+      if each["id"] in current_following:
+        lst.append(each["username"] + " check")
+      else:
+        lst.append(each["username"])
+    """
+    return render(request, 'workouts/follow_user.html', {
+			'list': user_list,
+      'current_following': currently_following,
+		})
+  else:
+    return HttpResponse("work in progress")
+"""
+  elif request.method == 'POST' and request.POST['follow']:
+    updated_list = request.POST['follow']
+    for each in updated_list:
+      if each in current_following:
+        pass
+      else:
+        pass
+    return HttpResponse("work in progress")
+"""     
+
 def add_user(request):
-  return HttpResponse("Add new user here")
+  if request.method == 'GET':
+    return render(request, 'workouts/add_user.html')
+  elif request.method == 'POST' and request.POST['username']:
+    username = request.POST['username']
+    user = User(username=username, create_date=timezone.now())
+    user.save()
+    return HttpResponseRedirect(reverse('workouts:user'))
+  else:
+    return render(request, 'workouts/add_user.html', {
+      'error_message': "You didn't enter a name",
+    })

@@ -7,7 +7,10 @@
 {% if list %}
     <ul>
     {% for user in list %}
-        <li>{{ user.username }}<span></span></li>
+        <li>
+          <a href="{% url "workouts:user_detail" user.id %}">{{ user.username }}</a>
+          <span>{{ user.count_followers }}</span>
+        </li>
     {% endfor %}
     </ul>
 {% else %}

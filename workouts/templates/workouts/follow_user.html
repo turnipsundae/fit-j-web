@@ -1,0 +1,19 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h1>Follow more:</h1>
+
+<form method="post">
+  {% csrf_token %}
+	{% for user in list %}
+		<input type="checkbox" name="follow" value="{{ user.username }}" 
+			{% if user.id in current_following %}
+				checked				
+			{% endif %}
+    >{{ user }} 
+    </br>
+  {% endfor %}
+  <input type="submit" value="Follow"/>
+</form>
+
+{% endblock content %}

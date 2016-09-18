@@ -1,0 +1,22 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h1>{{ user.username }} is currently following:</h1>
+
+
+<a href="{% url "workouts:follow_user" user.id %}">Follow more</a>
+<div>
+<ul>
+	{% for following in user.follower.all %}
+    <li><a href="{% url 'workouts:user_detail' following.user.id %}">{{ following.user.username }}</a></li>
+  {% endfor %}
+</ul>
+</div>
+
+<div>
+<form method="post">
+  {% csrf_token %}
+  <input type="submit" value="Delete user"/>
+</form>
+</div>
+{% endblock content %}
