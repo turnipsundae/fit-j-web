@@ -92,9 +92,14 @@ def user(request):
 
 def user_detail(request, user_id):
   user = get_object_or_404(User, pk=user_id)
-  return render(request, 'workouts/user_detail.html', {
+  if request.method == 'POST':
+    user.delete()
+    return HttpResponseRedirect(reverse('workouts:user'))
+  else:
+    return render(request, 'workouts/user_detail.html', {
     'user': user,
   })
+
 
 def follow_user(request, user_id):
   user = get_object_or_404(User, pk=user_id)
