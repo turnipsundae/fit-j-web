@@ -6,11 +6,11 @@
 <form method="post">
   {% csrf_token %}
 	{% for user in list %}
-		<input type="checkbox" name="follow" value="{{ user.username }}" 
+		<input type="checkbox" name="follow" value="{{ user.id }}" 
 			{% if user.id in current_following %}
 				checked				
 			{% endif %}
-    >{{ user }} 
+    >{{ user.username }} 
     </br>
   {% endfor %}
   <input type="submit" value="Follow"/>

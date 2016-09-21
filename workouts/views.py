@@ -100,7 +100,27 @@ def follow_user(request, user_id):
   user = get_object_or_404(User, pk=user_id)
   user_list = User.objects.all()
   currently_following = user.follower.values_list("user", flat=True)
-  if request.method == 'GET':
+  print (currently_following)
+  currently_following_all = user.follower.all()
+  if request.method == 'POST':
+    new_following_ids = request.POST.getlist('follow')
+    # compare current following to new list
+    # if current following is in new list, do nothing
+    # if current following isn't part of new list, remove it
+    # if any new list isn't in current following, add it 
+    for current_user in currently_following_all:
+      if str(current_user.id) not in new_following_ids:
+        #print ("delete" + str(current_user.id))
+        current_user.delete()
+    for new_id in new_following_ids:
+      if int(new_id) not in user.follower.values_list("id", flat=True):
+        #print ("add" + new_id)
+        user.follower.create(user=get_object_or_404(User, pk=int(new_id)), 
+                             follower=user,
+                             create_date=timezone.now())
+        
+    return HttpResponseRedirect(reverse('workouts:user'))
+  else:
     """
     # TODO replace with forms
     for each in user_dict:
@@ -110,11 +130,9 @@ def follow_user(request, user_id):
         lst.append(each["username"])
     """
     return render(request, 'workouts/follow_user.html', {
-			'list': user_list,
+      'list': user_list,
       'current_following': currently_following,
-		})
-  else:
-    return HttpResponse("work in progress")
+    })
 """
   elif request.method == 'POST' and request.POST['follow']:
     updated_list = request.POST['follow']
