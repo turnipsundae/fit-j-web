@@ -1,8 +1,11 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <title>{% block title %}Fit-j{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'workouts/style.css' %}"
   </head>
 
   <body>
@@ -12,6 +15,7 @@
         <li><a href="{% url 'workouts:index' %}">Home</a></li>
         <li><a href="{% url 'workouts:sort_by_likes' %}">Top 10</a></li>
         <li><a href="{% url 'workouts:trending' %}">Trending</a></li>
+        <li><a href="{% url 'workouts:user' %}">User</a></li>
       </ul>
       {% endblock sidebar %}
     </div>

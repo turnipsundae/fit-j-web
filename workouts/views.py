@@ -14,8 +14,8 @@ def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
   context = {'routine_list': latest_routine_list}
   return render(request, 'workouts/index.html', context)
-
-def results(request, routine_id):
+def
+ results(request, routine_id):
   response = "You're looking at the results of routine %s."
   return HttpResponse(response % routine_id)
 
@@ -105,7 +105,7 @@ def follow_user(request, user_id):
   user = get_object_or_404(User, pk=user_id)
   user_list = User.objects.all()
   currently_following = user.follower.values_list("user", flat=True)
-  print (currently_following)
+  #print (currently_following)
   currently_following_all = user.follower.all()
   if request.method == 'POST':
     new_following_ids = request.POST.getlist('follow')
@@ -126,28 +126,11 @@ def follow_user(request, user_id):
         
     return HttpResponseRedirect(reverse('workouts:user'))
   else:
-    """
-    # TODO replace with forms
-    for each in user_dict:
-      if each["id"] in current_following:
-        lst.append(each["username"] + " check")
-      else:
-        lst.append(each["username"])
-    """
+    # TODO replace with Django forms
     return render(request, 'workouts/follow_user.html', {
       'list': user_list,
       'current_following': currently_following,
     })
-"""
-  elif request.method == 'POST' and request.POST['follow']:
-    updated_list = request.POST['follow']
-    for each in updated_list:
-      if each in current_following:
-        pass
-      else:
-        pass
-    return HttpResponse("work in progress")
-"""     
 
 def add_user(request):
   if request.method == 'GET':
