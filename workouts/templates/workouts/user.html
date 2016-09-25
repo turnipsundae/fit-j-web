@@ -2,10 +2,10 @@
 
 {% block content %}
 <h1>User Index</h1>
-<p><a href="{% url 'workouts:add_user' %}">Add user</a></p>
 
 {% if list %}
     <ul>
+    <li><a href="{% url 'workouts:add_user' %}">Add user</a></li>
     {% for user in list %}
         <li>
           <a href="{% url "workouts:user_detail" user.id %}">{{ user.username }}</a>

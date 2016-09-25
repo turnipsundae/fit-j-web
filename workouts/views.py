@@ -23,11 +23,10 @@ def like(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   user_list = User.objects.all()
   if request.method == "POST":
-    if request.POST["user_id"]:
+    if "user_id" in request.POST:
       user_id = request.POST["user_id"]
       user = get_object_or_404(User, pk=user_id)
       user.user_routine_set.create(user=user, routine=routine)
-      print (user.user_routine_set.all())
     routine.likes = F('likes') + 1
     routine.save()
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
@@ -40,7 +39,6 @@ def like(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
-    print (request.content_type, request.content_params)
     routine.delete()
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
@@ -112,7 +110,6 @@ def follow_user(request, user_id):
   user = get_object_or_404(User, pk=user_id)
   user_list = User.objects.all()
   currently_following = user.follower.values_list("user", flat=True)
-  #print (currently_following)
   currently_following_all = user.follower.all()
   if request.method == 'POST':
     new_following_ids = request.POST.getlist('follow')
@@ -122,11 +119,10 @@ def follow_user(request, user_id):
     # if any new list isn't in current following, add it 
     for current_user in currently_following_all:
       if str(current_user.id) not in new_following_ids:
-        #print ("delete" + str(current_user.id))
         current_user.delete()
+
     for new_id in new_following_ids:
       if int(new_id) not in user.follower.values_list("id", flat=True):
-        #print ("add" + new_id)
         user.follower.create(user=get_object_or_404(User, pk=int(new_id)), 
                              follower=user,
                              create_date=timezone.now())
