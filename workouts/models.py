@@ -23,15 +23,6 @@ class Exercise(models.Model):
     return self.exercise_text
 
 
-
-class Comment(models.Model):
-  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
-  comment_text = models.CharField(max_length=200)
-  pub_date = models.DateTimeField('date published')
-  likes = models.IntegerField(default=0)
-  def __str__(self):
-    return self.comment_text
-
 class User(models.Model):
   username = models.CharField(max_length=50)
   create_date = models.DateTimeField('date created')
@@ -40,6 +31,23 @@ class User(models.Model):
     return Follower.objects.filter(user=self.id).count()
   def __str__(self):
     return self.username
+
+class Comment(models.Model):
+  #routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  user = models.ForeignKey(User, on_delete=models.CASCADE)
+  comment_text = models.CharField(max_length=200)
+  pub_date = models.DateTimeField('date published')
+  likes = models.IntegerField(default=0)
+  def __str__(self):
+    return self.comment_text
+
+
+class Comment_Routine(models.Model):
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+  def __str__(self):
+    return self.comment.comment_text
+
 
 class Follower(models.Model):
   user = models.ForeignKey(User, related_name="user")

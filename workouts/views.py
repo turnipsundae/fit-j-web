@@ -4,7 +4,7 @@ from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Routine, User
+from .models import Routine, User, Comment
 
 # Create your views here.
 def base(request):
@@ -151,7 +151,19 @@ def add_user(request):
 def comment(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   user_list = User.objects.all()
-  return render(request, 'workouts/comment.html', {
-    'routine': routine,
-    'list': user_list,
-  })
+  if request.method == "POST":
+    if "user_id" in request.POST and "comment" in request.POST:
+      user_id = request.POST["user_id"]
+      user = User.objects.filter(pk=user_id).get()
+      comment_text = request.POST["comment"]
+      comment = Comment(user=user, comment_text=comment_text, pub_date=timezone.now())
+      comment.save()
+      routine.comment_routine_set.create(routine=routine, comment=comment) 
+    
+    #return HttpResponseRedirect(reverse("workouts:detail", args=[routine_id]))
+    return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
+  else:
+    return render(request, 'workouts/comment.html', {
+      'routine': routine,
+      'list': user_list,
+    })

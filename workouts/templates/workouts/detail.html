@@ -14,6 +14,16 @@
 </ul>
 
 <div>
+<h1>Comments</h1>
+{% for comment_routine in routine.comment_routine_set.all %}
+  <div>
+		<strong>{{ comment_routine.comment.user.username }}</strong></br>
+		{{ comment_routine.comment.comment_text }}</br>
+  </div>
+{% endfor %}
+</div>
+
+<div>
 <form method="post">
   {% csrf_token %}
   <input type="submit" value="Delete routine"/>
