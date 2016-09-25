@@ -23,6 +23,11 @@ def like(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   user_list = User.objects.all()
   if request.method == "POST":
+    if request.POST["user_id"]:
+      user_id = request.POST["user_id"]
+      user = get_object_or_404(User, pk=user_id)
+      user.user_routine_set.create(user=user, routine=routine)
+      print (user.user_routine_set.all())
     routine.likes = F('likes') + 1
     routine.save()
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))

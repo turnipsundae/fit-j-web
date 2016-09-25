@@ -10,7 +10,7 @@
 
 <h2>Your username: </h2>
 	{% for user in list %}
-		<input type="radio" name="username" value="{{ user.id }}">{{ user.username }} </input>
+		<input type="radio" name="user_id" value="{{ user.id }}">{{ user.username }} </input>
 		</br>
 	{% endfor %}
 
