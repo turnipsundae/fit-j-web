@@ -147,3 +147,11 @@ def add_user(request):
     return render(request, 'workouts/add_user.html', {
       'error_message': "You didn't enter a name",
     })
+
+def comment(request, routine_id):
+  routine = get_object_or_404(Routine, pk=routine_id)
+  user_list = User.objects.all()
+  return render(request, 'workouts/comment.html', {
+    'routine': routine,
+    'list': user_list,
+  })

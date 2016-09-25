@@ -3,3 +3,8 @@
 * {
 	font-family: 'Roboto', sans-serif;
 }
+
+textarea {
+  width: 600px;
+	height: 120px;
+}

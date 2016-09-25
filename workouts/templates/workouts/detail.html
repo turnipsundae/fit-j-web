@@ -3,8 +3,10 @@
 {% block content %}
 <h1>{{ routine.routine_text }}</h1>
 <a href="{% url 'workouts:add_exercise' routine.id %}">Add exercise</a>
+<a href="{% url 'workouts:comment' routine.id %}">Comment</a>
 <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
 <span>{{ routine.likes }}</span>
+
 <ul>
 {% for exercise in routine.exercise_set.all %}
     <li>{{ exercise.exercise_text }}</li>

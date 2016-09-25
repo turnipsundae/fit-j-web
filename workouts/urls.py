@@ -22,6 +22,8 @@ urlpatterns = [
   url(r'^(?P<routine_id>[0-9]+)/results/$', views.results, name='results'),
   # e.g. /workouts/2/likes
   url(r'^(?P<routine_id>[0-9]+)/likes/$', views.like, name='like'),
+  # e.g. /workouts/2/comment
+  url(r'^(?P<routine_id>[0-9]+)/comment/$', views.comment, name='comment'),
   # e.g. /workouts/add/routine
   url(r'^add/routine/$', views.add_routine, name='add_routine'),
   # e.g. /workouts/add/user
