@@ -101,8 +101,14 @@ def user_detail(request, user_id):
     user.delete()
     return HttpResponseRedirect(reverse('workouts:user'))
   else:
+    comments = user.comment_set.all()
+    output_list = []
+    for comment in comments:
+      for comment_routine in comment.comment_routine_set.all():
+        output_list.append(comment_routine)
     return render(request, 'workouts/user_detail.html', {
     'user': user,
+    'output_list': output_list,
   })
 
 

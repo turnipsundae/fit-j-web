@@ -17,9 +17,19 @@
 <h2>Routines you currently follow:</h2>
 <ul>
 	{% for routine in user.user_routine_set.all %}
-    <li><a href="{% url "workouts:detail" routine.id %}">{{ routine.routine.routine_text }}</a></li>
+    <li><a href="{% url "workouts:detail" routine.routine.id %}">{{ routine.routine.routine_text }}</a></li>
   {% endfor %}
   <li><a href="{% url "workouts:index" %}">Browse all routines</a></li>
+</ul>
+</div>
+
+<div>
+<h2>Comments you recently made:</h2>
+<ul>
+	{% for comment_routine in output_list %}
+    <strong>{{ comment_routine.routine.routine_text }}</strong></br>
+    {{ comment_routine.comment.comment_text }}</br>
+  {% endfor %}
 </ul>
 </div>
 
