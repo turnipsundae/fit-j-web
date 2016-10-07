@@ -3,6 +3,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth import authenticate 
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import login as auth_login
 
 from .models import Routine, User, Comment
 
@@ -14,6 +17,24 @@ def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
   context = {'routine_list': latest_routine_list}
   return render(request, 'workouts/index.html', context)
+
+def login(request):
+  if request.method == "POST":
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+      auth_login(request, user)
+      return HttpResponse("Login success")
+    else:
+      # return an 'invalid login' error message
+      return HttpResponse("Error logging in")
+  else:
+    return render(request, 'workouts/login.html')
+
+def logout(request):
+  auth_logout(request)
+  return render(request, "workouts/logout.html")
 
 def results(request, routine_id):
   response = "You're looking at the results of routine %s."

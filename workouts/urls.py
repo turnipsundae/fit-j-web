@@ -8,6 +8,10 @@ urlpatterns = [
   url(r'^$', views.index, name='index'),
   # e.g. /workouts/base
   url(r'^base/$', views.base, name='base'),
+  # e.g. /workouts/login
+  url(r'^login/$', views.login, name='login'),
+  # e.g. /workouts/logout
+  url(r'^logout/$', views.logout, name='logout'),
   # e.g. /workouts/trending
   url(r'^trending/$', views.trending, name='trending'),
   # e.g. /workouts/user
