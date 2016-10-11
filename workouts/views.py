@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 
-from .models import Routine, User, Comment
+from .models import Routine, Comment
 
 # Create your views here.
 def base(request):
@@ -41,6 +41,7 @@ def results(request, routine_id):
   return HttpResponse(response % routine_id)
 
 def like(request, routine_id):
+  """
   routine = get_object_or_404(Routine, pk=routine_id)
   user_list = User.objects.all()
   if request.method == "POST":
@@ -56,6 +57,8 @@ def like(request, routine_id):
       'routine':routine,
       'list': user_list,
     })
+  """
+  return HttpResponse("Yiou liked this page")
 
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
@@ -112,11 +115,15 @@ def trending(request):
   return render(request, 'workouts/index.html', context)
   
 def user(request):
+  """
   user_list = User.objects.all()
   context = {'list': user_list}
   return render(request, 'workouts/user.html', context)
+  """
+  return HttpResponse("This is the users page")
 
 def user_detail(request, user_id):
+  """
   user = get_object_or_404(User, pk=user_id)
   if request.method == 'POST':
     user.delete()
@@ -131,9 +138,12 @@ def user_detail(request, user_id):
     'user': user,
     'output_list': output_list,
   })
+  """
+  return HttpResponse("This is the user_detail page")
 
 
 def follow_user(request, user_id):
+  """
   user = get_object_or_404(User, pk=user_id)
   user_list = User.objects.all()
   currently_following = user.follower.values_list("user", flat=True)
@@ -161,8 +171,11 @@ def follow_user(request, user_id):
       'list': user_list,
       'current_following': currently_following,
     })
+  """
+  return HttpResponse("This is the follow a new user page")
 
 def add_user(request):
+  """
   if request.method == 'GET':
     return render(request, 'workouts/add_user.html')
   elif request.method == 'POST' and request.POST['username']:
@@ -174,8 +187,11 @@ def add_user(request):
     return render(request, 'workouts/add_user.html', {
       'error_message': "You didn't enter a name",
     })
+  """
+  return HttpResponse("This is the add user page")
 
 def comment(request, routine_id):
+  """
   routine = get_object_or_404(Routine, pk=routine_id)
   user_list = User.objects.all()
   if request.method == "POST":
@@ -194,3 +210,5 @@ def comment(request, routine_id):
       'routine': routine,
       'list': user_list,
     })
+  """
+  return HttpResponse("This is the comment page")

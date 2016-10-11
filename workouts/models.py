@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 import datetime
 
@@ -23,18 +24,19 @@ class Exercise(models.Model):
     return self.exercise_text
 
 
-class User(models.Model):
-  username = models.CharField(max_length=50)
-  create_date = models.DateTimeField('date created')
-  #followers = models.ForeignKey("self", null=True, blank=True, default=None)
-  def count_followers(self):
-    return Follower.objects.filter(user=self.id).count()
-  def __str__(self):
-    return self.username
+# class User(models.Model):
+#   username = models.CharField(max_length=50)
+#   create_date = models.DateTimeField('date created')
+#   #followers = models.ForeignKey("self", null=True, blank=True, default=None)
+#   def count_followers(self):
+#     return Follower.objects.filter(user=self.id).count()
+#   def __str__(self):
+#     return self.username
 
 class Comment(models.Model):
   #routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
-  user = models.ForeignKey(User, on_delete=models.CASCADE)
+  # user = models.ForeignKey(User, on_delete=models.CASCADE)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   comment_text = models.CharField(max_length=200)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
@@ -50,14 +52,15 @@ class Comment_Routine(models.Model):
 
 
 class Follower(models.Model):
-  user = models.ForeignKey(User, related_name="user")
-  follower = models.ForeignKey(User, related_name="follower")
+  # user = models.ForeignKey(User, related_name="user")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user")
+  follower = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="follower")
   create_date = models.DateTimeField('date created')
   def __str__(self):
     return self.user.username
 
 class User_Routine(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   def __str__(self):
     return self.routine.routine_text
