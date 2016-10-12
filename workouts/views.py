@@ -3,9 +3,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth import authenticate 
+from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
+from django.contrib.auth.models import User 
 
 from .models import Routine, Comment
 
@@ -25,16 +26,44 @@ def login(request):
     user = authenticate(username=username, password=password)
     if user is not None:
       auth_login(request, user)
-      return HttpResponse("Login success")
+      return render(request, "workouts/index.html") 
     else:
       # return an 'invalid login' error message
-      return HttpResponse("Error logging in")
+      # return HttpResponse("Error logging in")
+      return render(request, "workouts/login.html", {
+        "error_message" : "Username and password did not match",
+        "username" : username,
+        })
   else:
     return render(request, 'workouts/login.html')
 
 def logout(request):
   auth_logout(request)
   return render(request, "workouts/logout.html")
+
+def profile(request):
+  if not request.user.is_authenticated:
+    return HttpResponseRedirect(reverse('workouts:login'))
+  else:
+    # return HttpResponse("Welcome to your profile page")
+    return render(request, "workouts/profile.html") 
+
+def sign_up(request):
+  if request.method == "POST":
+    first_name = request.POST['first_name']
+    last_name = request.POST['last_name']
+    email = request.POST['email']
+    password = request.POST['password']
+
+    user = User(first_name = first_name,
+                last_name = last_name,
+                email = email,
+                username = email,
+                password = password)
+    user.save()
+    return HttpResponse("New user successfully created!")
+  else:
+    return render(request, "workouts/sign_up.html")
 
 def results(request, routine_id):
   response = "You're looking at the results of routine %s."
@@ -115,12 +144,9 @@ def trending(request):
   return render(request, 'workouts/index.html', context)
   
 def user(request):
-  """
   user_list = User.objects.all()
   context = {'list': user_list}
   return render(request, 'workouts/user.html', context)
-  """
-  return HttpResponse("This is the users page")
 
 def user_detail(request, user_id):
   """

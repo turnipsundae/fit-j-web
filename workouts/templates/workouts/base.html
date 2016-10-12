@@ -17,9 +17,11 @@
         <li><a href="{% url 'workouts:trending' %}">Trending</a></li>
         <li><a href="{% url 'workouts:user' %}">User</a></li>
         {% if user.is_authenticated %}
+          <li><a href="{% url 'workouts:profile' %}">{{ user.username }}</a></li>
           <li><a href="{% url 'workouts:logout' %}">Logout</a></li>
         {% else %}
           <li><a href="{% url 'workouts:login' %}">Login</a></li>
+          <li><a href="{% url 'workouts:sign_up' %}">Sign up</a></li>
         {% endif %}        
       </ul>
       {% endblock sidebar %}

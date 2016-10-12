@@ -12,8 +12,12 @@ urlpatterns = [
   url(r'^login/$', views.login, name='login'),
   # e.g. /workouts/logout
   url(r'^logout/$', views.logout, name='logout'),
+  # e.g. /workouts/sign_up
+  url(r'^sign_up/$', views.sign_up, name='sign_up'),
   # e.g. /workouts/trending
   url(r'^trending/$', views.trending, name='trending'),
+  # e.g. /workouts/profile
+  url(r'^profile/$', views.profile, name='profile'),
   # e.g. /workouts/user
   url(r'^user/$', views.user, name='user'),
   # e.g. /workouts/user/2
