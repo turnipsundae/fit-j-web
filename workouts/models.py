@@ -6,11 +6,12 @@ import datetime
 
 # Create your models here.
 class Routine(models.Model):
-  routine_text = models.CharField(max_length=200)
+  routine_title = models.CharField(max_length=70)
+  routine_text = models.TextField(max_length=200)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
   def __str__(self):
-    return self.routine_text
+    return self.routine_title
   
 
 class Exercise(models.Model):
@@ -59,8 +60,8 @@ class Follower(models.Model):
   def __str__(self):
     return self.user.username
 
-class User_Routine(models.Model):
+class Journal(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   def __str__(self):
-    return self.routine.routine_text
+    return self.routine.routine_title

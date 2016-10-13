@@ -18,6 +18,8 @@ urlpatterns = [
   url(r'^trending/$', views.trending, name='trending'),
   # e.g. /workouts/profile
   url(r'^profile/$', views.profile, name='profile'),
+  # e.g. /workouts/journal
+  url(r'^journal/$', views.journal, name='journal'),
   # e.g. /workouts/user
   url(r'^user/$', views.user, name='user'),
   # e.g. /workouts/user/2

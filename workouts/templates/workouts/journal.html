@@ -1,0 +1,11 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<div><h1>Planned</h1></div>
+{% for entry in journal %}
+  <div>{{ entry.routine.routine_title }}</div>
+  <div>{{ entry.routine.routine_text  }}</div>
+  <hr>
+{% endfor %}
+<div><h1>Completed</h1></div>
+{% endblock content %}

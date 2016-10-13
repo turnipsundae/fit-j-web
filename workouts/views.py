@@ -7,8 +7,9 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User 
+from django.contrib.auth.decorators import login_required
 
-from .models import Routine, Comment
+from .models import Routine, Comment, Journal
 
 # Create your views here.
 def base(request):
@@ -29,7 +30,6 @@ def login(request):
       return render(request, "workouts/index.html") 
     else:
       # return an 'invalid login' error message
-      # return HttpResponse("Error logging in")
       return render(request, "workouts/login.html", {
         "error_message" : "Username and password did not match",
         "username" : username,
@@ -45,7 +45,6 @@ def profile(request):
   if not request.user.is_authenticated:
     return HttpResponseRedirect(reverse('workouts:login'))
   else:
-    # return HttpResponse("Welcome to your profile page")
     return render(request, "workouts/profile.html") 
 
 def sign_up(request):
@@ -54,6 +53,8 @@ def sign_up(request):
     last_name = request.POST['last_name']
     email = request.POST['email']
     password = request.POST['password']
+
+    # TODO validate fields
 
     user = User(first_name = first_name,
                 last_name = last_name,
@@ -64,6 +65,13 @@ def sign_up(request):
     return HttpResponse("New user successfully created!")
   else:
     return render(request, "workouts/sign_up.html")
+
+@login_required(login_url="/workouts/login/")
+def journal(request):
+  journal = Journal.objects.filter(user=request.user)
+  return render(request, "workouts/journal.html", {
+    'journal' : journal,
+    })
 
 def results(request, routine_id):
   response = "You're looking at the results of routine %s."
