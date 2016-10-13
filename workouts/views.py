@@ -67,7 +67,7 @@ def sign_up(request):
   else:
     return render(request, "workouts/sign_up.html")
 
-@login_required(login_url="/workouts/login/")
+@login_required()
 def journal(request):
   journal = Journal.objects.filter(user=request.user)
   return render(request, "workouts/journal.html", {
@@ -96,7 +96,7 @@ def like(request, routine_id):
       'list': user_list,
     })
   """
-  return HttpResponse("Yiou liked this page")
+  return HttpResponse("You liked this page")
 
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
@@ -108,7 +108,7 @@ def detail(request, routine_id):
       'routine': routine,
     })
 
-@login_required(login_url="/workouts/login/")
+@login_required()
 def add_to_journal(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
