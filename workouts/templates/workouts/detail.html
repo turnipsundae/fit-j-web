@@ -1,18 +1,15 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<h1>{{ routine.routine_text }}</h1>
-<a href="{% url 'workouts:add_exercise' routine.id %}">Add exercise</a>
+<div><h1>{{ routine.routine_title }}</h1></div>
+<a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
 <a href="{% url 'workouts:comment' routine.id %}">Comment</a>
 <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
 <a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
 <span>{{ routine.likes }}</span>
 
-<ul>
-{% for exercise in routine.exercise_set.all %}
-    <li>{{ exercise.exercise_text }}</li>
-{% endfor %}
-</ul>
+<div><pre>{{ routine.routine_text }}</pre></div>
+
 
 <div>
 <h1>Comments</h1>

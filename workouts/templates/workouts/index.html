@@ -7,7 +7,7 @@
 {% if routine_list %}
     <ul>
     {% for routine in routine_list %}
-        <li><a href="{% url 'workouts:detail' routine.id %}">{{ routine.routine_text }}</a><span>  {{ routine.likes }}</span></li>
+        <li><a href="{% url 'workouts:detail' routine.id %}">{{ routine.routine_title }}</a><span>  {{ routine.likes }}</span></li>
     {% endfor %}
     </ul>
 {% else %}

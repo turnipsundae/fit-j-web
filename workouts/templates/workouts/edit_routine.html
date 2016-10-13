@@ -1,9 +1,9 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<h1>Add a new routine</h1>
+<h1>Edit</h1>
 
-<form action="{% url 'workouts:add_routine' %}" method="post">
+<form method="post">
 {% csrf_token %}
   <div>
     <div><label for="routine_title">Title</label></div>
@@ -18,7 +18,7 @@
     <div><textarea name="routine_text" id="routine_text" style="height: 200px; width: 400px;">{{ routine_text }}</textarea></div>
     {% if error_text %}
       <span>{{ error_text }}</span>
-    {% endif %}
+    {% endif %}    
   </div>
   <input type="submit" value="Submit"/>
 </form>

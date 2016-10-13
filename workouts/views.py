@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .models import Routine, Comment, Journal
+import re
 
 # Create your views here.
 def base(request):
@@ -122,22 +123,71 @@ def add_to_journal(request, routine_id):
 def parse_exercises(exercises):
 	return exercises.split("\r\n")
 
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
+def valid_username(username):
+    return username and USER_RE.match(username)
+
+PASS_RE = re.compile(r"^.{6,20}$")
+def valid_password(password):
+    return password and PASS_RE.match(password)
+
+EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+def valid_email(email):
+    return not email or EMAIL_RE.match(email)
+
+CONTENT_RE = re.compile(r'^[\S0-9]{2,}')
+def valid_content_input(content):
+  return content and CONTENT_RE.match(content)
+
 def add_routine(request):
-  if request.method == 'GET':
-    return render(request, 'workouts/add_routine.html')
-  elif request.method == 'POST' and request.POST['routine_text']:
+  if request.method == 'POST':
+    error_exists = False
+    routine_title = request.POST['routine_title']
     routine_text = request.POST['routine_text']
-    r = Routine(routine_text=routine_text, pub_date=timezone.now())
+    params = dict(routine_title=routine_title,
+                  routine_text=routine_text)
+    # TODO validate inputs 
+    if not valid_content_input(routine_title):
+      error_exists = True
+      params['error_title'] = "Please enter a title"
+    if not valid_content_input(routine_text):
+      error_exists = True
+      params['error_text'] = "Please enter the details"
+    if error_exists:
+      return render(request, 'workouts/add_routine.html', params)
+    r = Routine(routine_title=routine_title, routine_text=routine_text, 
+                pub_date=timezone.now())
     r.save()
-    if request.POST['exercise_text']:
-      exercises = parse_exercises(request.POST['exercise_text'])
-      for exercise in exercises:
-        r.exercise_set.create(exercise_text=exercise, pub_date=timezone.now())
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
-    return render(request, 'workouts/add_routine.html', {
-      'error_message': "You didn't enter a name"
-    })
+    return render(request, 'workouts/add_routine.html')
+
+def edit_routine(request, routine_id):
+  routine = get_object_or_404(Routine, pk=routine_id)
+  if request.method == 'POST':
+    # TODO validate inputs 
+    error_exists = False
+    routine_title = request.POST['routine_title']
+    routine_text = request.POST['routine_text']
+    params = dict(routine_title=routine_title,
+                  routine_text=routine_text)
+    if not valid_content_input(routine_title):
+      error_exists = True
+      params['error_title'] = "Please enter a title"
+    if not valid_content_input(routine_text):
+      error_exists = True
+      params['error_text'] = "Please enter the details"
+    if error_exists:
+      return render(request, 'workouts/edit_routine.html', params)
+    routine.routine_title = routine_title
+    routine.routine_text = routine_text
+    routine.save()
+    return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
+  else:
+    return render(request, "workouts/edit_routine.html", {
+      'routine_title': routine.routine_title,
+      'routine_text': routine.routine_text,
+      })
 
 def add_exercise(request, routine_id):
   if request.method == 'GET':
