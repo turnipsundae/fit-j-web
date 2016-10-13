@@ -1,0 +1,10 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h1>Add {{ routine.routine_title }} to journal?</h1>
+
+<form method="post">
+{% csrf_token %}
+  <input type="submit" value="Add routine"/>
+</form>
+{% endblock %}

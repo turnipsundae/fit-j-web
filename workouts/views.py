@@ -107,6 +107,18 @@ def detail(request, routine_id):
       'routine': routine,
     })
 
+@login_required(login_url="/workouts/login/")
+def add_to_journal(request, routine_id):
+  routine = get_object_or_404(Routine, pk=routine_id)
+  if request.method == 'POST':
+    entry = Journal(user=request.user, routine=routine)
+    entry.save()
+    return HttpResponseRedirect(reverse('workouts:index'))
+  else:
+    return render(request, "workouts/add_to_journal.html", {
+      'routine' : routine, 
+      })
+
 def parse_exercises(exercises):
 	return exercises.split("\r\n")
 

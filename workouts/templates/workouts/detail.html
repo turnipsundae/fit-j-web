@@ -5,6 +5,7 @@
 <a href="{% url 'workouts:add_exercise' routine.id %}">Add exercise</a>
 <a href="{% url 'workouts:comment' routine.id %}">Comment</a>
 <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
+<a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
 <span>{{ routine.likes }}</span>
 
 <ul>
