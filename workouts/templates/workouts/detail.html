@@ -12,6 +12,13 @@
 
 <div><pre>{{ routine.routine_text }}</pre></div>
 
+<div><h4>Tags</h4></div>
+<div>
+  {% for tag in routine.tag_set.all %}
+  <span>{{ tag.tag_text }}<span>
+  {% endfor %}
+</div>
+
 <div>
   <h1>Comments</h1>
   {% for comment in routine.comment_set.all %}

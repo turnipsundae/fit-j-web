@@ -121,8 +121,10 @@ def detail(request, routine_id):
     # redirect anonymous users to login
     return HttpResponseRedirect(reverse('workouts:login'))
   else:
+    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
     return render(request, 'workouts/detail.html', {
       'routine': routine,
+      'tag_list': tag_list,
     })
 
 @login_required()
@@ -155,6 +157,10 @@ def valid_email(email):
 CONTENT_RE = re.compile(r'^[\S0-9]{2,}')
 def valid_content_input(content):
   return content and CONTENT_RE.match(content)
+
+TAG_LIST_RE = re.compile(r'^[a-zA-Z0-9]{3,70}(\s+[a-zA-Z0-9]{3,70})*$')
+def valid_tag_list(tag_list):
+  return tag_list and TAG_LIST_RE.match(tag_list)
 
 @login_required()
 def add_routine(request):
@@ -190,24 +196,33 @@ def edit_routine(request, routine_id):
     error_exists = False
     routine_title = request.POST['routine_title']
     routine_text = request.POST['routine_text']
+    tag_list = request.POST['tag_list']
     params = dict(routine_title=routine_title,
-                  routine_text=routine_text)
+                  routine_text=routine_text,
+                  tag_list=tag_list)
     if not valid_content_input(routine_title):
       error_exists = True
       params['error_title'] = "Please enter a title"
     if not valid_content_input(routine_text):
       error_exists = True
       params['error_text'] = "Please enter the details"
+    if not valid_tag_list(tag_list):
+      error_exists = True
+      params['error_tag_list'] = "Please only use letters and numbers. Use spaces to separate tags."
     if error_exists:
       return render(request, 'workouts/edit_routine.html', params)
     routine.routine_title = routine_title
     routine.routine_text = routine_text
     routine.save()
+    routine.tag_set.all().delete()
+    [routine.tag_set.create(tag_text=tag_text) for tag_text in tag_list.split()]
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
   else:
+    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
     return render(request, "workouts/edit_routine.html", {
       'routine_title': routine.routine_title,
       'routine_text': routine.routine_text,
+      'tag_list': tag_list,
       })
 
 def add_exercise(request, routine_id):

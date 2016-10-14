@@ -20,6 +20,13 @@
       <span>{{ error_text }}</span>
     {% endif %}    
   </div>
+
+  <div>
+    <div><label for="tag_list">Tags</label></div>
+    <div><textarea name="tag_list" id="tag_list" style="height: 50px; width: 400px;">{{ tag_list }}</textarea>
+    <div>{{ error_tag_list }}</div>
+  </div>
+
   <input type="submit" value="Submit"/>
 </form>
 {% endblock %}

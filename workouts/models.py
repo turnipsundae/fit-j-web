@@ -36,6 +36,13 @@ class Comment(models.Model):
     return self.comment_text
 
 
+class Tag(models.Model):
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  tag_text = models.CharField(max_length=70)
+  def __str__(self):
+    return self.tag_text
+
+
 class Comment_Routine(models.Model):
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
