@@ -101,8 +101,25 @@ def like(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
-    routine.delete()
-    return HttpResponseRedirect(reverse('workouts:index'))
+    if "delete_routine" in request.POST:
+      if request.user.is_authenticated:
+        if request.user != routine.created_by:
+          return render(request, 'workouts/detail.html', { 'routine': routine, 'error_delete':"you aren't the creator of this routine"})
+        routine.delete()
+        return HttpResponseRedirect(reverse('workouts:index'))
+    if "comment" in request.POST:
+      if request.user.is_authenticated:
+        comment_text = request.POST["comment_text"]
+        params = dict(routine=routine, comment_text=comment_text)
+        if not valid_content_input(comment_text):
+          params['error_text'] = "Please enter the details"
+          return render(request, 'workouts/detail.html', params)
+        routine.comment_set.create(created_by=request.user,
+                                   comment_text=comment_text,
+                                   pub_date=timezone.now())
+        return HttpResponseRedirect(reverse('workouts:detail', args=[routine.id]))
+    # redirect anonymous users to login
+    return HttpResponseRedirect(reverse('workouts:login'))
   else:
     return render(request, 'workouts/detail.html', {
       'routine': routine,
@@ -290,25 +307,17 @@ def add_user(request):
   """
   return HttpResponse("This is the add user page")
 
+@login_required()
 def comment(request, routine_id):
-  """
   routine = get_object_or_404(Routine, pk=routine_id)
-  user_list = User.objects.all()
   if request.method == "POST":
-    if "user_id" in request.POST and "comment" in request.POST:
-      user_id = request.POST["user_id"]
-      user = User.objects.filter(pk=user_id).get()
-      comment_text = request.POST["comment"]
-      comment = Comment(user=user, comment_text=comment_text, pub_date=timezone.now())
-      comment.save()
-      routine.comment_routine_set.create(routine=routine, comment=comment) 
-    
-    #return HttpResponseRedirect(reverse("workouts:detail", args=[routine_id]))
-    return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
-  else:
-    return render(request, 'workouts/comment.html', {
-      'routine': routine,
-      'list': user_list,
-    })
-  """
+    comment_text = request.POST["comment_text"]
+    params = dict(routine_id=routine.id, comment_text=comment_text)
+    if not valid_content_input(comment_text):
+      params['error_text'] = "Please enter the details"
+      return render(request, 'workouts/detail.html', params)
+    routine.comment_set.create(created_by=request.user,
+                               comment_text=comment_text,
+                               pub_date=timezone.now())
+    return HttpResponseRedirect(reverse('workouts:detail', args=[routine.id]))
   return HttpResponse("This is the comment page")

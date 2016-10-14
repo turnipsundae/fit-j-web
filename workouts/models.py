@@ -26,19 +26,9 @@ class Exercise(models.Model):
     return self.exercise_text
 
 
-# class User(models.Model):
-#   username = models.CharField(max_length=50)
-#   create_date = models.DateTimeField('date created')
-#   #followers = models.ForeignKey("self", null=True, blank=True, default=None)
-#   def count_followers(self):
-#     return Follower.objects.filter(user=self.id).count()
-#   def __str__(self):
-#     return self.username
-
 class Comment(models.Model):
-  #routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
-  # user = models.ForeignKey(User, on_delete=models.CASCADE)
-  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  created_by = models.ForeignKey(settings.AUTH_USER_MODEL)
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   comment_text = models.CharField(max_length=200)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
