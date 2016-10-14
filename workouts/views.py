@@ -139,6 +139,7 @@ CONTENT_RE = re.compile(r'^[\S0-9]{2,}')
 def valid_content_input(content):
   return content and CONTENT_RE.match(content)
 
+@login_required()
 def add_routine(request):
   if request.method == 'POST':
     error_exists = False
@@ -156,14 +157,17 @@ def add_routine(request):
     if error_exists:
       return render(request, 'workouts/add_routine.html', params)
     r = Routine(routine_title=routine_title, routine_text=routine_text, 
-                pub_date=timezone.now())
+                pub_date=timezone.now(), created_by=request.user)
     r.save()
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
     return render(request, 'workouts/add_routine.html')
 
+@login_required()
 def edit_routine(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
+  if request.user != routine.created_by:
+    return HttpResponse("You're not the owner of this routine")
   if request.method == 'POST':
     # TODO validate inputs 
     error_exists = False

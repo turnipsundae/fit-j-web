@@ -2,6 +2,7 @@
 
 {% block content %}
 <div><h1>{{ routine.routine_title }}</h1></div>
+<div>Created {{ routine.pub_date }} by {{ }}
 <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
 <a href="{% url 'workouts:comment' routine.id %}">Comment</a>
 <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
