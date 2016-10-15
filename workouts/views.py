@@ -215,6 +215,7 @@ def edit_routine(request, routine_id):
     routine.routine_text = routine_text
     routine.save()
     routine.tag_set.all().delete()
+    # TODO ensure no duplicate tags
     [routine.tag_set.create(tag_text=tag_text) for tag_text in tag_list.split()]
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
   else:
