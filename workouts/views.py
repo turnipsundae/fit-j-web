@@ -110,15 +110,14 @@ def sign_up(request):
 @login_required()
 def journal(request):
   # TODO get_object_or_404?
-  journal_planned = Journal.objects.filter(user=request.user, completed_count=0)
-  journal_completed = Journal.objects.filter(user=request.user, completed_count__gt=0)
   journal = Journal.objects.filter(user=request.user)
+  journal_planned = journal.filter(completed_count=0)
+  journal_completed = journal.filter(completed_count__gt=0)
 
-  params = dict(journal_planned=journal_planned, journal_completed=journal_completed,
-                journal=journal)
+  params = dict(journal=journal, journal_planned=journal_planned, 
+                journal_completed=journal_completed)
 
   if request.method == 'POST':
-    # TODO boil down two button checks to one
     if 'entry_id' in request.POST:
       error_exists = False
       entry_id = request.POST['entry_id']
