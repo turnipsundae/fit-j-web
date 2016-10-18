@@ -16,7 +16,7 @@
         <span><a href="{% url 'workouts:trending' %}">Trending</a></span>
         <span><a href="{% url 'workouts:user' %}">User</a></span>
         {% if user.is_authenticated %}
-          <span><a href="{% url 'workouts:profile' %}">{{ user.username }}</a></span>
+          <span><a href="{% url 'workouts:profile' %}">{{ user.first_name }}</a></span>
           <span><a href="{% url 'workouts:journal' %}">Journal</a></span>
           <span><a href="{% url 'workouts:logout' %}">Logout</a></span>
         {% else %}

@@ -14,7 +14,11 @@ import re
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
 def valid_username(username):
-    return username and USER_RE.match(username)
+  return username and USER_RE.match(username)
+
+NAME_RE = re.compile(r'^[a-zA-Z]+([a-zA-Z-\'\s])*$')
+def valid_name(name):
+  return name and NAME_RE.match(name)
 
 PASS_RE = re.compile(r"^.{6,20}$")
 def valid_password(password):
@@ -22,7 +26,7 @@ def valid_password(password):
 
 EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
 def valid_email(email):
-    return not email or EMAIL_RE.match(email)
+    return email or EMAIL_RE.match(email)
 
 CONTENT_RE = re.compile(r'^.|\n{1,1000}$')
 def valid_content_input(content):
@@ -78,8 +82,20 @@ def sign_up(request):
     last_name = request.POST['last_name']
     email = request.POST['email']
     password = request.POST['password']
+    error_exists = False
+    params = dict(first_name=first_name, last_name=last_name, email=email)
 
-    # TODO validate fields
+    if not valid_name(first_name) or not valid_name(last_name):
+      error_exists = True
+      params['error_name'] = "Enter a first and last name using only letters, apostrophes and hyphens"
+    if not valid_email(email):
+      error_exists = True
+      params['error_email'] = "Please enter in the format example@domain.com"
+    if not valid_password(password):
+      error_exists = True
+      params['error_password'] = "Minimum password length is 6 characters"
+    if error_exists:
+      return render(request, "workouts/sign_up.html", params)
 
     user = User(first_name = first_name,
                 last_name = last_name,
