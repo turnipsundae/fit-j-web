@@ -10,19 +10,14 @@
   <span>
     <form method='post'>
       {% csrf_token %}
-      <input type="hidden" name="routine_completed" id="routine_completed" value="{{ entry.id }}" />
-      <input type="submit" value="Mark completed" />
-    </form>
-  </span>
-  <span>
-    <form method='post'>
-      {% csrf_token %}
-      <input type="hidden" name="routine_remove" value="{{ entry.id }}" />
-      <input type="submit" value="Remove from journal" />
+      <input type="hidden" name="entry_id" value="{{ entry.id }}" />
+      <span><input type="submit" name="mark_complete" value="Mark complete" /></span>
+      <span><input type="submit" name="remove_from_journal" value="Remove from journal" /></span>
     </form>
   </span>
   <hr>
 {% endfor %}
+
 <div><h1>Completed</h1></div>
 {% for entry in journal_completed %}
   <div><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></div>
@@ -31,6 +26,13 @@
     <span>Last completed {{ entry.completed_on }}</span>
     <span>Total times completed {{ entry.completed_count }}<span>
   </div>
+  <form method='post'>
+    {% csrf_token %}
+    <input type="hidden" name="entry_id" value="{{ entry.id }}" />
+    <span><input type="submit" name="mark_complete" value="Mark complete" /></span>
+    <span><input type="submit" name="remove_from_journal" value="Remove from journal" /></span>
+  </form>
   <hr>
 {% endfor %}
+
 {% endblock content %}

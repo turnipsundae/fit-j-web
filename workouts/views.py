@@ -98,26 +98,28 @@ def journal(request):
   journal_completed = Journal.objects.filter(user=request.user, completed_count__gt=0)
   journal = Journal.objects.filter(user=request.user)
 
+  params = dict(journal_planned=journal_planned, journal_completed=journal_completed,
+                journal=journal)
+
   if request.method == 'POST':
     # TODO boil down two button checks to one
-    if 'routine_completed' in request.POST:
+    if 'entry_id' in request.POST:
       error_exists = False
-      routine_completed_id = request.POST['routine_completed']
-      if not valid_digit(routine_completed_id):
+      entry_id = request.POST['entry_id']
+      if not valid_digit(entry_id):
         error_exists = True
-      routine_completed_id = int(routine_completed_id)
-      if journal.filter(pk=routine_completed_id).exists():
-        entry = journal.get(pk=routine_completed_id)
+        params['error_entry_id'] = "The journal entry did not match any records"
+      if error_exists:
+        return render(request, 'workouts/journal.html', params)
+
+      entry_id = int(entry_id)
+      entry = get_object_or_404(Journal, user=request.user, pk=entry_id)
+
+      if 'mark_complete' in request.POST:
         entry.completed_count = F('completed_count') + 1
         entry.completed_on = timezone.now()
         entry.save()
-    if 'routine_remove' in request.POST:
-      routine_remove_id = request.POST['routine_remove']
-      if not valid_digit(routine_remove_id):
-        error_exists = True
-      routine_remove_id = int(routine_remove_id)
-      if journal.filter(pk=routine_remove_id).exists():
-        entry = journal.get(pk=routine_remove_id)
+      if 'remove_from_journal' in request.POST:
         entry.delete()
 
   return render(request, "workouts/journal.html", {
