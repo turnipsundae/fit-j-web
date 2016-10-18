@@ -12,6 +12,30 @@ from django.contrib.auth.decorators import login_required
 from .models import Routine, Comment, Journal
 import re
 
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
+def valid_username(username):
+    return username and USER_RE.match(username)
+
+PASS_RE = re.compile(r"^.{6,20}$")
+def valid_password(password):
+    return password and PASS_RE.match(password)
+
+EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+def valid_email(email):
+    return not email or EMAIL_RE.match(email)
+
+CONTENT_RE = re.compile(r'^.|\n{1,1000}$')
+def valid_content_input(content):
+  return content and CONTENT_RE.match(content)
+
+TAG_LIST_RE = re.compile(r'^[a-zA-Z0-9]{3,70}(\s+[a-zA-Z0-9]{3,70})*$')
+def valid_tag_list(tag_list):
+  return tag_list and TAG_LIST_RE.match(tag_list)
+
+DIGIT_RE = re.compile(r'^[0-9]+$')
+def valid_digit(num):
+  return num and DIGIT_RE.match(num)
+
 # Create your views here.
 def base(request):
   return render(request, 'workouts/base.html')
@@ -69,9 +93,36 @@ def sign_up(request):
 
 @login_required()
 def journal(request):
+  # TODO get_object_or_404?
+  journal_planned = Journal.objects.filter(user=request.user, completed_count=0)
+  journal_completed = Journal.objects.filter(user=request.user, completed_count__gt=0)
   journal = Journal.objects.filter(user=request.user)
+
+  if request.method == 'POST':
+    # TODO boil down two button checks to one
+    if 'routine_completed' in request.POST:
+      error_exists = False
+      routine_completed_id = request.POST['routine_completed']
+      if not valid_digit(routine_completed_id):
+        error_exists = True
+      routine_completed_id = int(routine_completed_id)
+      if journal.filter(pk=routine_completed_id).exists():
+        entry = journal.get(pk=routine_completed_id)
+        entry.completed_count = F('completed_count') + 1
+        entry.completed_on = timezone.now()
+        entry.save()
+    if 'routine_remove' in request.POST:
+      routine_remove_id = request.POST['routine_remove']
+      if not valid_digit(routine_remove_id):
+        error_exists = True
+      routine_remove_id = int(routine_remove_id)
+      if journal.filter(pk=routine_remove_id).exists():
+        entry = journal.get(pk=routine_remove_id)
+        entry.delete()
+
   return render(request, "workouts/journal.html", {
-    'journal' : journal,
+    'journal_planned' : journal_planned,
+    'journal_completed' : journal_completed,
     })
 
 def results(request, routine_id):
@@ -142,25 +193,6 @@ def add_to_journal(request, routine_id):
 def parse_exercises(exercises):
 	return exercises.split("\r\n")
 
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
-def valid_username(username):
-    return username and USER_RE.match(username)
-
-PASS_RE = re.compile(r"^.{6,20}$")
-def valid_password(password):
-    return password and PASS_RE.match(password)
-
-EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-def valid_email(email):
-    return not email or EMAIL_RE.match(email)
-
-CONTENT_RE = re.compile(r'^[\S0-9]{2,}')
-def valid_content_input(content):
-  return content and CONTENT_RE.match(content)
-
-TAG_LIST_RE = re.compile(r'^[a-zA-Z0-9]{3,70}(\s+[a-zA-Z0-9]{3,70})*$')
-def valid_tag_list(tag_list):
-  return tag_list and TAG_LIST_RE.match(tag_list)
 
 @login_required()
 def add_routine(request):

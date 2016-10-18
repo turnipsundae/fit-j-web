@@ -29,7 +29,7 @@ class Exercise(models.Model):
 class Comment(models.Model):
   created_by = models.ForeignKey(settings.AUTH_USER_MODEL)
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
-  comment_text = models.CharField(max_length=200)
+  comment_text = models.TextField(max_length=1000)
   pub_date = models.DateTimeField('date published')
   likes = models.IntegerField(default=0)
   def __str__(self):
@@ -61,5 +61,7 @@ class Follower(models.Model):
 class Journal(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  completed_on = models.DateTimeField(null=True)
+  completed_count = models.IntegerField(default=0)
   def __str__(self):
     return self.routine.routine_title

@@ -2,10 +2,35 @@
 
 {% block content %}
 <div><h1>Planned</h1></div>
-{% for entry in journal %}
-  <div>{{ entry.routine.routine_title }}</div>
-  <div>{{ entry.routine.routine_text  }}</div>
+{% for entry in journal_planned %}
+  <span>
+    <div><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></div>
+    <div>{{ entry.routine.routine_text|truncatewords:10 }}</div>
+  </span>
+  <span>
+    <form method='post'>
+      {% csrf_token %}
+      <input type="hidden" name="routine_completed" id="routine_completed" value="{{ entry.id }}" />
+      <input type="submit" value="Mark completed" />
+    </form>
+  </span>
+  <span>
+    <form method='post'>
+      {% csrf_token %}
+      <input type="hidden" name="routine_remove" value="{{ entry.id }}" />
+      <input type="submit" value="Remove from journal" />
+    </form>
+  </span>
   <hr>
 {% endfor %}
 <div><h1>Completed</h1></div>
+{% for entry in journal_completed %}
+  <div><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></div>
+  <div>{{ entry.routine.routine_text|truncatewords:10 }}</div>
+  <div>
+    <span>Last completed {{ entry.completed_on }}</span>
+    <span>Total times completed {{ entry.completed_count }}<span>
+  </div>
+  <hr>
+{% endfor %}
 {% endblock content %}
