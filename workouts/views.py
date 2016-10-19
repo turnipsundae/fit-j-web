@@ -28,6 +28,10 @@ EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
 def valid_email(email):
     return email or EMAIL_RE.match(email)
 
+TITLE_RE = re.compile(r'^[a-zA-Z0-9]([a-zA-Z0-9_\-\'\s]){0,69}$')
+def valid_title(title):
+  return title and TITLE_RE.match(title)
+
 CONTENT_RE = re.compile(r'^.|\n{1,1000}$')
 def valid_content_input(content):
   return content and CONTENT_RE.match(content)
@@ -171,6 +175,12 @@ def like(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
+    if "add_to_journal" in request.POST:
+      if not request.user.is_authenticated:
+        return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
+      entry = Journal(user=request.user, routine=routine)
+      entry.save()
+      return render(request, "workouts/detail.html", {'routine': routine})
     if "delete_routine" in request.POST:
       if request.user.is_authenticated:
         if request.user != routine.created_by:
@@ -213,28 +223,55 @@ def parse_exercises(exercises):
 	return exercises.split("\r\n")
 
 
-@login_required()
-def add_routine(request):
+def valid_routine_form(request):
+  """
+  checks routine form for routine_title, routine_text, and tag_list
+  returns tuple of an error check and params
+  returns None if not a POST method
+  """
   if request.method == 'POST':
     error_exists = False
     routine_title = request.POST['routine_title']
     routine_text = request.POST['routine_text']
+    tag_list = request.POST['tag_list']
     params = dict(routine_title=routine_title,
-                  routine_text=routine_text)
-    # TODO validate inputs 
-    if not valid_content_input(routine_title):
+                  routine_text=routine_text,
+                  tag_list=tag_list,
+                  created_by=request.user)
+    if not valid_title(routine_title):
       error_exists = True
-      params['error_title'] = "Please enter a title"
+      params['error_title'] = "Enter a title under 70 characters long. Only letters and numbers allowed."
     if not valid_content_input(routine_text):
       error_exists = True
-      params['error_text'] = "Please enter the details"
+      params['error_text'] = "Enter details under 1000 characters long."
+    if not valid_tag_list(tag_list):
+      error_exists = True
+      params['error_tag_list'] = "Tags should be at least 3 characters long using only letters and numbers. Separate tags with a space."
+    return (error_exists, params)
+
+@login_required()
+def modify_routine(request, routine_id, modify_mode):
+  routine = get_object_or_404(Routine, pk=routine_id)
+  if modify_mode == 'edit':
+    return HttpResponse("edit this post")
+  if modify_mode == 'customize':
+    return HttpResponse("customize this post")
+  return HttpResponse("Modifying a routine")
+
+@login_required()
+def add_routine(request):
+  if request.method == 'POST':
+    error_exists, params = valid_routine_form(request)
     if error_exists:
       return render(request, 'workouts/add_routine.html', params)
-    r = Routine(routine_title=routine_title, routine_text=routine_text, 
-                pub_date=timezone.now(), created_by=request.user)
+    r = Routine(routine_title=params['routine_title'],
+                routine_text=params['routine_text'], 
+                created_by=request.user)
     r.save()
+    [r.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
+    print (valid_routine_form(request))
     return render(request, 'workouts/add_routine.html')
 
 @login_required()
@@ -243,31 +280,15 @@ def edit_routine(request, routine_id):
   if request.user != routine.created_by:
     return HttpResponse("You're not the owner of this routine")
   if request.method == 'POST':
-    # TODO validate inputs 
-    error_exists = False
-    routine_title = request.POST['routine_title']
-    routine_text = request.POST['routine_text']
-    tag_list = request.POST['tag_list']
-    params = dict(routine_title=routine_title,
-                  routine_text=routine_text,
-                  tag_list=tag_list)
-    if not valid_content_input(routine_title):
-      error_exists = True
-      params['error_title'] = "Please enter a title"
-    if not valid_content_input(routine_text):
-      error_exists = True
-      params['error_text'] = "Please enter the details"
-    if not valid_tag_list(tag_list):
-      error_exists = True
-      params['error_tag_list'] = "Please only use letters and numbers. Use spaces to separate tags."
+    error_exists, params = valid_routine_form(request)
     if error_exists:
       return render(request, 'workouts/edit_routine.html', params)
-    routine.routine_title = routine_title
-    routine.routine_text = routine_text
+    routine.routine_title = params['routine_title']
+    routine.routine_text = params['routine_text']
     routine.save()
     routine.tag_set.all().delete()
     # TODO ensure no duplicate tags
-    [routine.tag_set.create(tag_text=tag_text) for tag_text in tag_list.split()]
+    [routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
     return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
   else:
     tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
@@ -279,35 +300,19 @@ def edit_routine(request, routine_id):
 
 @login_required()
 def customize_routine(request, routine_id):
-  # if request.method == 'post':
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
-    error_exists = False
-    routine_title = request.POST['routine_title']
-    routine_text = request.POST['routine_text']
-    tag_list = request.POST['tag_list']
-    params = dict(routine_title=routine_title,
-                  routine_text=routine_text,
-                  tag_list=tag_list)
-    if not valid_content_input(routine_title):
-      error_exists = True
-      params['error_title'] = "Please enter a title"
-    if not valid_content_input(routine_text):
-      error_exists = True
-      params['error_text'] = "Please enter the details"
-    if not valid_tag_list(tag_list):
-      error_exists = True
-      params['error_tag_list'] = "Please only use letters and numbers. Use spaces to separate tags."
+    error_exists, params = valid_routine_form(request)
     if error_exists:
       return render(request, 'workouts/edit_routine.html', params)
     # create copy of routine
-    customized_routine = Routine(routine_title=routine_title,
-                                 routine_text=routine_text,
+    customized_routine = Routine(routine_title=params['routine_title'],
+                                 routine_text=params['routine_text'],
                                  pub_date=timezone.now(),
                                  created_by=request.user)
     customized_routine.save()
     # TODO ensure no duplicate tags
-    [customized_routine.tag_set.create(tag_text=tag_text) for tag_text in tag_list.split()]
+    [customized_routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
     request.user.journal_set.create(routine=customized_routine)
     return HttpResponseRedirect(reverse('workouts:journal'))
   else:

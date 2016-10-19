@@ -8,7 +8,12 @@
     <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
   {% endif %}
   <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
-  <a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
+  {% if user.is_authenticated %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="submit" name="add_to_journal" value="Add to journal" />
+    </form><a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
+  {% endif %}
   <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
   <span>{{ routine.likes }}</span>
 </div>
