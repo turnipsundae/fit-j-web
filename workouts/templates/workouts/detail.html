@@ -4,9 +4,12 @@
 <div><h1>{{ routine.routine_title }}</h1></div>
 <div>Created {{ routine.pub_date }} by {{ routine.created_by }}</div>
 <div>
-  <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
+  {% if user == routine.created_by %}
+    <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
+  {% endif %}
   <a href="{% url 'workouts:like' routine.id %}">Upvote</a>
   <a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
+  <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
   <span>{{ routine.likes }}</span>
 </div>
 

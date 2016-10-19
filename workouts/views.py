@@ -32,9 +32,11 @@ CONTENT_RE = re.compile(r'^.|\n{1,1000}$')
 def valid_content_input(content):
   return content and CONTENT_RE.match(content)
 
-TAG_LIST_RE = re.compile(r'^[a-zA-Z0-9]{3,70}(\s+[a-zA-Z0-9]{3,70})*$')
+TAG_LIST_RE = re.compile(r'^([a-zA-Z0-9]{3,70}\s*)*$')
 def valid_tag_list(tag_list):
-  return tag_list and TAG_LIST_RE.match(tag_list)
+  # TODO does not check for None since emtpy string should be allowed.
+  #      return tag_list and TAG_LIST_RE.match(tag_list) gets a false with ''
+  return TAG_LIST_RE.match(tag_list)
 
 DIGIT_RE = re.compile(r'^[0-9]+$')
 def valid_digit(num):
@@ -270,6 +272,47 @@ def edit_routine(request, routine_id):
   else:
     tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
     return render(request, "workouts/edit_routine.html", {
+      'routine_title': routine.routine_title,
+      'routine_text': routine.routine_text,
+      'tag_list': tag_list,
+      })
+
+@login_required()
+def customize_routine(request, routine_id):
+  # if request.method == 'post':
+  routine = get_object_or_404(Routine, pk=routine_id)
+  if request.method == 'POST':
+    error_exists = False
+    routine_title = request.POST['routine_title']
+    routine_text = request.POST['routine_text']
+    tag_list = request.POST['tag_list']
+    params = dict(routine_title=routine_title,
+                  routine_text=routine_text,
+                  tag_list=tag_list)
+    if not valid_content_input(routine_title):
+      error_exists = True
+      params['error_title'] = "Please enter a title"
+    if not valid_content_input(routine_text):
+      error_exists = True
+      params['error_text'] = "Please enter the details"
+    if not valid_tag_list(tag_list):
+      error_exists = True
+      params['error_tag_list'] = "Please only use letters and numbers. Use spaces to separate tags."
+    if error_exists:
+      return render(request, 'workouts/edit_routine.html', params)
+    # create copy of routine
+    customized_routine = Routine(routine_title=routine_title,
+                                 routine_text=routine_text,
+                                 pub_date=timezone.now(),
+                                 created_by=request.user)
+    customized_routine.save()
+    # TODO ensure no duplicate tags
+    [customized_routine.tag_set.create(tag_text=tag_text) for tag_text in tag_list.split()]
+    request.user.journal_set.create(routine=customized_routine)
+    return HttpResponseRedirect(reverse('workouts:journal'))
+  else:
+    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
+    return render(request, "workouts/customize_routine.html", {
       'routine_title': routine.routine_title,
       'routine_text': routine.routine_text,
       'tag_list': tag_list,

@@ -32,6 +32,8 @@ urlpatterns = [
   url(r'^(?P<routine_id>[0-9]+)/add_to_journal/$', views.add_to_journal, name='add_to_journal'),
   # e.g. /workouts/2/edit
   url(r'^(?P<routine_id>[0-9]+)/edit/$', views.edit_routine, name='edit_routine'),
+  # e.g. /workouts/2/customize
+  url(r'^(?P<routine_id>[0-9]+)/customize/$', views.customize_routine, name='customize_routine'),
   # e.g. /workouts/2/results
   url(r'^(?P<routine_id>[0-9]+)/results/$', views.results, name='results'),
   # e.g. /workouts/2/likes

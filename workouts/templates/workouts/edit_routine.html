@@ -1,32 +1,5 @@
-{% extends "./base.html" %}
+{% extends "./template_form_routine.html" %}
 
-{% block content %}
-<h1>Edit</h1>
-
-<form method="post">
-{% csrf_token %}
-  <div>
-    <div><label for="routine_title">Title</label></div>
-    <div><input type="text" name="routine_title" id="routine_title" value="{{ routine_title }}" /></div>
-    {% if error_title %}
-      <span>{{ error_title }}</span>
-    {% endif %}
-  </div>
-
-  <div>
-    <div><label for="routine_text">Details</label></div>
-    <div><textarea name="routine_text" id="routine_text" style="height: 200px; width: 400px;">{{ routine_text }}</textarea></div>
-    {% if error_text %}
-      <span>{{ error_text }}</span>
-    {% endif %}    
-  </div>
-
-  <div>
-    <div><label for="tag_list">Tags</label></div>
-    <div><textarea name="tag_list" id="tag_list" style="height: 50px; width: 400px;">{{ tag_list }}</textarea>
-    <div>{{ error_tag_list }}</div>
-  </div>
-
-  <input type="submit" value="Submit"/>
-</form>
+{% block title %}
+  Edit routine
 {% endblock %}

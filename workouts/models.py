@@ -8,7 +8,7 @@ import datetime
 class Routine(models.Model):
   routine_title = models.CharField(max_length=70)
   routine_text = models.TextField()
-  pub_date = models.DateTimeField('date published')
+  pub_date = models.DateTimeField('date published', default=timezone.now)
   created_by = models.ForeignKey(settings.AUTH_USER_MODEL)
   likes = models.IntegerField(default=0)
   def __str__(self):

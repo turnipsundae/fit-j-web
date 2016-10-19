@@ -1,0 +1,28 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h1>{% block title %}Template form routine{% endblock %}</h1>
+
+<form method="post">
+{% csrf_token %}
+  <div>
+    <div><label for="routine_title">Title</label></div>
+    <div><input type="text" name="routine_title" id="routine_title" value="{{ routine_title }}" /></div>
+    <span>{{ error_title }}</span>
+  </div>
+
+  <div>
+    <div><label for="routine_text">Details</label></div>
+    <div><textarea name="routine_text" id="routine_text" style="height: 200px; width: 400px;">{{ routine_text }}</textarea></div>
+    <span>{{ error_text }}</span>
+  </div>
+
+  <div>
+    <div><label for="tag_list">Tags</label></div>
+    <div><textarea name="tag_list" id="tag_list" style="height: 50px; width: 400px;">{{ tag_list }}</textarea>
+    <div>{{ error_tag_list }}</div>
+  </div>
+
+  <input type="submit" value="Submit"/>
+</form>
+{% endblock %}
