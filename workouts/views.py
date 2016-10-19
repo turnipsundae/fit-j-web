@@ -223,40 +223,31 @@ def parse_exercises(exercises):
 	return exercises.split("\r\n")
 
 
+def get_routine_form_params(request):
+  routine_title = request.POST['routine_title']
+  routine_text = request.POST['routine_text']
+  tag_list = request.POST['tag_list']
+  return dict(routine_title=routine_title,routine_text=routine_text,
+              tag_list=tag_list, created_by=request.user)
+
 def valid_routine_form(request):
   """
   checks routine form for routine_title, routine_text, and tag_list
   returns tuple of an error check and params
-  returns None if not a POST method
+  does not check for post method
   """
-  if request.method == 'POST':
-    error_exists = False
-    routine_title = request.POST['routine_title']
-    routine_text = request.POST['routine_text']
-    tag_list = request.POST['tag_list']
-    params = dict(routine_title=routine_title,
-                  routine_text=routine_text,
-                  tag_list=tag_list,
-                  created_by=request.user)
-    if not valid_title(routine_title):
-      error_exists = True
-      params['error_title'] = "Enter a title under 70 characters long. Only letters and numbers allowed."
-    if not valid_content_input(routine_text):
-      error_exists = True
-      params['error_text'] = "Enter details under 1000 characters long."
-    if not valid_tag_list(tag_list):
-      error_exists = True
-      params['error_tag_list'] = "Tags should be at least 3 characters long using only letters and numbers. Separate tags with a space."
-    return (error_exists, params)
-
-@login_required()
-def modify_routine(request, routine_id, modify_mode):
-  routine = get_object_or_404(Routine, pk=routine_id)
-  if modify_mode == 'edit':
-    return HttpResponse("edit this post")
-  if modify_mode == 'customize':
-    return HttpResponse("customize this post")
-  return HttpResponse("Modifying a routine")
+  params = get_routine_form_params(request)
+  error_exists = False
+  if not valid_title(params['routine_title']):
+    error_exists = True
+    params['error_title'] = "Enter a title under 70 characters long. Only letters and numbers allowed."
+  if not valid_content_input(params['routine_text']):
+    error_exists = True
+    params['error_text'] = "Enter details under 1000 characters long."
+  if not valid_tag_list(params['tag_list']):
+    error_exists = True
+    params['error_tag_list'] = "Tags should be at least 3 characters long using only letters and numbers. Separate tags with a space."
+  return (error_exists, params)
 
 @login_required()
 def add_routine(request):
@@ -271,16 +262,36 @@ def add_routine(request):
     [r.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
-    print (valid_routine_form(request))
     return render(request, 'workouts/add_routine.html')
+
+@login_required()
+def modify_routine(request, routine_id, modify_mode):
+  routine = get_object_or_404(Routine, pk=routine_id)
+  paths = dict(edit="workouts/detail.html", customize="workouts/customize.html")
+  if request.method == 'post':
+    error_exists, params = valid_routine_form(request)
+    if modify_mode == 'edit':
+      if request.user != routine.created_by:
+        error_exists = True
+        params['error_owner'] = "You're not the owner of this routine"
+      if error_exists:
+        pass
+
+
+
+    return HttpResponse("edit this post")
+  if modify_mode == 'customize':
+    return HttpResponse("customize this post")
+  return HttpResponse("Modifying a routine")
 
 @login_required()
 def edit_routine(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
-  if request.user != routine.created_by:
-    return HttpResponse("You're not the owner of this routine")
   if request.method == 'POST':
     error_exists, params = valid_routine_form(request)
+    if request.user != routine.created_by:
+      error_exists = True
+      params['error_owner'] = "You're not the owner of this routine"
     if error_exists:
       return render(request, 'workouts/edit_routine.html', params)
     routine.routine_title = params['routine_title']
@@ -304,7 +315,7 @@ def customize_routine(request, routine_id):
   if request.method == 'POST':
     error_exists, params = valid_routine_form(request)
     if error_exists:
-      return render(request, 'workouts/edit_routine.html', params)
+      return render(request, 'workouts/customize_routine.html', params)
     # create copy of routine
     customized_routine = Routine(routine_title=params['routine_title'],
                                  routine_text=params['routine_text'],

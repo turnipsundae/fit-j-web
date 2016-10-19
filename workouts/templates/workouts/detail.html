@@ -12,8 +12,9 @@
     <form method="post">
       {% csrf_token %}
       <input type="submit" name="add_to_journal" value="Add to journal" />
-    </form><a href="{% url 'workouts:add_to_journal' routine.id %}">Add to journal</a>
+    </form>
   {% endif %}
+<!--   <button type="submit" name="add_to_journal" value="Add to journal">Add to journal</button> -->
   <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
   <span>{{ routine.likes }}</span>
 </div>
