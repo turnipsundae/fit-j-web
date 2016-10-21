@@ -266,14 +266,36 @@ def modify_routine(request, routine_id, modify_mode):
         error_exists = True
         params['error_owner'] = "You're not the owner of this routine"
       if error_exists:
-        pass
-
-
-
-    return HttpResponse("edit this post")
-  if modify_mode == 'customize':
-    return HttpResponse("customize this post")
-  return HttpResponse("Modifying a routine")
+        return render(request, 'workouts/edit_routine.html', params)
+      routine.routine_title = params['routine_title']
+      routine.routine_text = params['routine_text']
+      routine.save()
+      routine.tag_set.all().delete()
+      # TODO ensure no duplicate tags
+      [routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
+      return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
+    elif modify_mode == 'customize':
+      if error_exists:
+        return render(request, 'workouts/customize_routine.html', params)
+      # create copy of routine
+      customized_routine = Routine(routine_title=params['routine_title'],
+                                   routine_text=params['routine_text'],
+                                   pub_date=timezone.now(),
+                                   created_by=request.user)
+      customized_routine.save()
+      # TODO ensure no duplicate tags
+      [customized_routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
+      request.user.journal_set.create(routine=customized_routine)
+      return HttpResponseRedirect(reverse('workouts:journal'))
+    else:
+      return HttpResponse("404")
+  else:
+    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
+    return render(request, "workouts/edit_routine.html", {
+      'routine_title': routine.routine_title,
+      'routine_text': routine.routine_text,
+      'tag_list': tag_list,
+      })
 
 @login_required()
 def edit_routine(request, routine_id):
