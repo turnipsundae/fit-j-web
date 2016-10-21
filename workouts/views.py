@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Routine, Comment, Journal
 import re
 
+# TODO move regex to a utils file
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
 def valid_username(username):
   return username and USER_RE.match(username)
@@ -47,9 +48,6 @@ def valid_digit(num):
   return num and DIGIT_RE.match(num)
 
 # Create your views here.
-def base(request):
-  return render(request, 'workouts/base.html')
-
 def index(request):
   latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
   context = {'routine_list': latest_routine_list}
@@ -152,12 +150,11 @@ def results(request, routine_id):
   response = "You're looking at the results of routine %s."
   return HttpResponse(response % routine_id)
 
-def like(request, routine_id):
-  return HttpResponse("You liked this page")
 
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
+    # TODO flash message to confirm add to journal
     if "add_to_journal" in request.POST:
       if not request.user.is_authenticated:
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
@@ -172,6 +169,7 @@ def detail(request, routine_id):
       # reload the object to show the DB update
       routine = Routine.objects.filter(pk=routine_id).get()
       return render(request, "workouts/detail.html", {'routine': routine})
+    # TODO ask for confirmation to delete (pop-up)
     if "delete_routine" in request.POST:
       if request.user.is_authenticated:
         if request.user != routine.created_by:
@@ -198,21 +196,6 @@ def detail(request, routine_id):
       'tag_list': tag_list,
     })
 
-@login_required()
-def add_to_journal(request, routine_id):
-  routine = get_object_or_404(Routine, pk=routine_id)
-  if request.method == 'POST':
-    entry = Journal(user=request.user, routine=routine)
-    entry.save()
-    return HttpResponseRedirect(reverse('workouts:index'))
-  else:
-    return render(request, "workouts/add_to_journal.html", {
-      'routine' : routine, 
-      })
-
-def parse_exercises(exercises):
-	return exercises.split("\r\n")
-
 
 def get_routine_form_params(request):
   routine_title = request.POST['routine_title']
@@ -222,11 +205,7 @@ def get_routine_form_params(request):
               tag_list=tag_list, created_by=request.user)
 
 def valid_routine_form(request):
-  """
-  checks routine form for routine_title, routine_text, and tag_list
-  returns tuple of an error check and params
-  does not check for post method
-  """
+  """Checks routine form for routine_title, routine_text, and tag_list. Returns tuple of an error check and params. Does not check for post method."""
   params = get_routine_form_params(request)
   error_exists = False
   if not valid_title(params['routine_title']):
@@ -254,48 +233,6 @@ def add_routine(request):
     return HttpResponseRedirect(reverse('workouts:index'))
   else:
     return render(request, 'workouts/add_routine.html')
-
-@login_required()
-def modify_routine(request, routine_id, modify_mode):
-  routine = get_object_or_404(Routine, pk=routine_id)
-  paths = dict(edit="workouts/detail.html", customize="workouts/customize.html")
-  if request.method == 'post':
-    error_exists, params = valid_routine_form(request)
-    if modify_mode == 'edit':
-      if request.user != routine.created_by:
-        error_exists = True
-        params['error_owner'] = "You're not the owner of this routine"
-      if error_exists:
-        return render(request, 'workouts/edit_routine.html', params)
-      routine.routine_title = params['routine_title']
-      routine.routine_text = params['routine_text']
-      routine.save()
-      routine.tag_set.all().delete()
-      # TODO ensure no duplicate tags
-      [routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
-      return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
-    elif modify_mode == 'customize':
-      if error_exists:
-        return render(request, 'workouts/customize_routine.html', params)
-      # create copy of routine
-      customized_routine = Routine(routine_title=params['routine_title'],
-                                   routine_text=params['routine_text'],
-                                   pub_date=timezone.now(),
-                                   created_by=request.user)
-      customized_routine.save()
-      # TODO ensure no duplicate tags
-      [customized_routine.tag_set.create(tag_text=tag_text) for tag_text in params['tag_list'].split()]
-      request.user.journal_set.create(routine=customized_routine)
-      return HttpResponseRedirect(reverse('workouts:journal'))
-    else:
-      return HttpResponse("404")
-  else:
-    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
-    return render(request, "workouts/edit_routine.html", {
-      'routine_title': routine.routine_title,
-      'routine_text': routine.routine_text,
-      'tag_list': tag_list,
-      })
 
 @login_required()
 def edit_routine(request, routine_id):
@@ -347,6 +284,10 @@ def customize_routine(request, routine_id):
       'tag_list': tag_list,
       })
 
+
+def parse_exercises(exercises):
+  return exercises.split("\r\n")
+
 def add_exercise(request, routine_id):
   if request.method == 'GET':
     return render(request, 'workouts/add_exercise.html')
@@ -377,22 +318,6 @@ def user(request):
   return render(request, 'workouts/user.html', context)
 
 def user_detail(request, user_id):
-  """
-  user = get_object_or_404(User, pk=user_id)
-  if request.method == 'POST':
-    user.delete()
-    return HttpResponseRedirect(reverse('workouts:user'))
-  else:
-    comments = user.comment_set.all()
-    output_list = []
-    for comment in comments:
-      for comment_routine in comment.comment_routine_set.all():
-        output_list.append(comment_routine)
-    return render(request, 'workouts/user_detail.html', {
-    'user': user,
-    'output_list': output_list,
-  })
-  """
   return HttpResponse("This is the user_detail page")
 
 
@@ -427,34 +352,3 @@ def follow_user(request, user_id):
     })
   """
   return HttpResponse("This is the follow a new user page")
-
-def add_user(request):
-  """
-  if request.method == 'GET':
-    return render(request, 'workouts/add_user.html')
-  elif request.method == 'POST' and request.POST['username']:
-    username = request.POST['username']
-    user = User(username=username, create_date=timezone.now())
-    user.save()
-    return HttpResponseRedirect(reverse('workouts:user'))
-  else:
-    return render(request, 'workouts/add_user.html', {
-      'error_message': "You didn't enter a name",
-    })
-  """
-  return HttpResponse("This is the add user page")
-
-@login_required()
-def comment(request, routine_id):
-  routine = get_object_or_404(Routine, pk=routine_id)
-  if request.method == "POST":
-    comment_text = request.POST["comment_text"]
-    params = dict(routine_id=routine.id, comment_text=comment_text)
-    if not valid_content_input(comment_text):
-      params['error_text'] = "Please enter the details"
-      return render(request, 'workouts/detail.html', params)
-    routine.comment_set.create(created_by=request.user,
-                               comment_text=comment_text,
-                               pub_date=timezone.now())
-    return HttpResponseRedirect(reverse('workouts:detail', args=[routine.id]))
-  return HttpResponse("This is the comment page")

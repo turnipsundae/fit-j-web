@@ -6,8 +6,6 @@ app_name = 'workouts'
 urlpatterns = [
   # e.g. /workouts
   url(r'^$', views.index, name='index'),
-  # e.g. /workouts/base
-  url(r'^base/$', views.base, name='base'),
   # e.g. /workouts/login
   url(r'^login/$', views.login, name='login'),
   # e.g. /workouts/logout
@@ -29,26 +27,15 @@ urlpatterns = [
   # e.g. /workouts/2
   url(r'^(?P<routine_id>[0-9]+)/$', views.detail, name='detail'),
   # e.g. /workouts/2/edit
-  # e.g. /workouts/2/customize
-  # url(r'^(?P<routine_id>[0-9]+)/(?P<modify_mode>[\S]+)/$', views.modify_routine, name="modify_routine"),
-  # e.g. /workouts/2/add_to_journal
-  url(r'^(?P<routine_id>[0-9]+)/add_to_journal/$', views.add_to_journal, name='add_to_journal'),
-  # e.g. /workouts/2/edit
   url(r'^(?P<routine_id>[0-9]+)/edit/$', views.edit_routine, name='edit_routine'),
   # e.g. /workouts/2/customize
   url(r'^(?P<routine_id>[0-9]+)/customize/$', views.customize_routine, name='customize_routine'),
   # e.g. /workouts/2/results
   url(r'^(?P<routine_id>[0-9]+)/results/$', views.results, name='results'),
-  # e.g. /workouts/2/likes
-  url(r'^(?P<routine_id>[0-9]+)/likes/$', views.like, name='like'),
   # e.g. /workouts/add/routine
   url(r'^add/routine/$', views.add_routine, name='add_routine'),
-  # e.g. /workouts/add/user
-  url(r'^add/user/$', views.add_user, name='add_user'),
   # e.g. /workouts/2/add/exercise
   url(r'^(?P<routine_id>[0-9]+)/add/exercise/$', views.add_exercise, name='add_exercise'),
-  # e.g. /workouts/2/like
-  url(r'^(?P<routine_id>[0-9]+)/like/$', views.like, name='like'),
   # e.g. /workouts/sort_by_likes
   url(r'^sort_by_likes/$', views.sort_by_likes, name='sort_by_likes'),
 
