@@ -9,7 +9,9 @@ class Routine(models.Model):
   routine_title = models.CharField(max_length=70)
   routine_text = models.TextField()
   pub_date = models.DateTimeField('date published', default=timezone.now)
-  created_by = models.ForeignKey(settings.AUTH_USER_MODEL)
+  created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="created_by")
+  modify_date = models.DateTimeField('date modified', null=True)
+  modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, related_name="modified_by")
   likes = models.IntegerField(default=0)
   def __str__(self):
     return self.routine_title

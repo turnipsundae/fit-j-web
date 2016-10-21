@@ -153,23 +153,6 @@ def results(request, routine_id):
   return HttpResponse(response % routine_id)
 
 def like(request, routine_id):
-  """
-  routine = get_object_or_404(Routine, pk=routine_id)
-  user_list = User.objects.all()
-  if request.method == "POST":
-    if "user_id" in request.POST:
-      user_id = request.POST["user_id"]
-      user = get_object_or_404(User, pk=user_id)
-      user.user_routine_set.create(user=user, routine=routine)
-    routine.likes = F('likes') + 1
-    routine.save()
-    return HttpResponseRedirect(reverse('workouts:detail', args=[routine_id]))
-  else:
-    return render(request, 'workouts/like.html', {
-      'routine':routine,
-      'list': user_list,
-    })
-  """
   return HttpResponse("You liked this page")
 
 def detail(request, routine_id):
@@ -180,6 +163,14 @@ def detail(request, routine_id):
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
       entry = Journal(user=request.user, routine=routine)
       entry.save()
+      return render(request, "workouts/detail.html", {'routine': routine})
+    if "like" in request.POST:
+      if not request.user.is_authenticated:
+        return render(request, 'workouts/detail.html', { 'routine': routine, 'error_like': "You must log in first"})
+      routine.likes = F('likes') + 1
+      routine.save()
+      # reload the object to show the DB update
+      routine = Routine.objects.filter(pk=routine_id).get()
       return render(request, "workouts/detail.html", {'routine': routine})
     if "delete_routine" in request.POST:
       if request.user.is_authenticated:
