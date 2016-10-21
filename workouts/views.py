@@ -10,42 +10,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .models import Routine, Comment, Journal
-import re
+from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit
 
-# TODO move regex to a utils file
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{6,20}$")
-def valid_username(username):
-  return username and USER_RE.match(username)
-
-NAME_RE = re.compile(r'^[a-zA-Z]+([a-zA-Z-\'\s])*$')
-def valid_name(name):
-  return name and NAME_RE.match(name)
-
-PASS_RE = re.compile(r"^.{6,20}$")
-def valid_password(password):
-    return password and PASS_RE.match(password)
-
-EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-def valid_email(email):
-    return email or EMAIL_RE.match(email)
-
-TITLE_RE = re.compile(r'^[a-zA-Z0-9]([a-zA-Z0-9_\-\'\s]){0,69}$')
-def valid_title(title):
-  return title and TITLE_RE.match(title)
-
-CONTENT_RE = re.compile(r'^.|\n{1,1000}$')
-def valid_content_input(content):
-  return content and CONTENT_RE.match(content)
-
-TAG_LIST_RE = re.compile(r'^([a-zA-Z0-9]{3,70}\s*)*$')
-def valid_tag_list(tag_list):
-  # TODO does not check for None since emtpy string should be allowed.
-  #      return tag_list and TAG_LIST_RE.match(tag_list) gets a false with ''
-  return TAG_LIST_RE.match(tag_list)
-
-DIGIT_RE = re.compile(r'^[0-9]+$')
-def valid_digit(num):
-  return num and DIGIT_RE.match(num)
 
 # Create your views here.
 def index(request):
@@ -107,7 +73,8 @@ def sign_up(request):
                 username = email,
                 password = password)
     user.save()
-    return HttpResponse("New user successfully created!")
+    # TODO add sign up success message to login
+    return HttpResponseRedirect(reverse("workouts:login"))
   else:
     return render(request, "workouts/sign_up.html")
 
@@ -154,13 +121,13 @@ def results(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
-    # TODO flash message to confirm add to journal
+    # TODO check if already added to journal
     if "add_to_journal" in request.POST:
       if not request.user.is_authenticated:
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
       entry = Journal(user=request.user, routine=routine)
       entry.save()
-      return render(request, "workouts/detail.html", {'routine': routine})
+      return render(request, "workouts/detail.html", {'routine': routine, 'add_to_journal_success': "Added routine to journal"})
     if "like" in request.POST:
       if not request.user.is_authenticated:
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_like': "You must log in first"})
@@ -267,6 +234,7 @@ def customize_routine(request, routine_id):
     if error_exists:
       return render(request, 'workouts/customize_routine.html', params)
     # create copy of routine
+    # TODO track who modified and who was previous author, add links
     customized_routine = Routine(routine_title=params['routine_title'],
                                  routine_text=params['routine_text'],
                                  pub_date=timezone.now(),
