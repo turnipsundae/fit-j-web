@@ -14,10 +14,31 @@ from .utils import valid_name, valid_username, valid_password, valid_email, vali
 
 
 # Create your views here.
+# TODO create recommendations based on likes
+# TODO add pages e.g. &start=10
 def index(request):
-  latest_routine_list = Routine.objects.order_by('-pub_date')[:10]
-  context = {'routine_list': latest_routine_list}
-  return render(request, 'workouts/index.html', context)
+  if request.method == 'GET':
+    s = request.GET.get('start', 0)
+    if valid_digit(s):
+      s = int(s)
+    # get the current page results
+    routine_list = Routine.objects.order_by('-likes')[s:s+10]
+    # get the current page number
+    current_page = int(s / 10) + 1
+    # check if next results and get next page number
+    results_remaining = Routine.objects.count() - s
+    if results_remaining > 0:
+      next_start = s + 10
+      next_page = int(next_start / 10) + 1
+    # check if prev results and get prev page number
+    results_prev = s - 10
+    prev_page, prev_start = False, False
+    if results_prev >= 0:
+      prev_start = s - 10
+      prev_page = int(prev_start / 10) - 1
+    context = {'list': routine_list, 'current_page': current_page, 'next_page': next_page, 'prev_page': prev_page, 'next_start': next_start, 'prev_start': prev_start }
+    print (Routine.objects.count(), prev_start, prev_page)
+    return render(request, 'workouts/index.html', context)
 
 def login(request):
   if request.method == "POST":
@@ -121,18 +142,27 @@ def results(request, routine_id):
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
-    # TODO check if already added to journal
     if "add_to_journal" in request.POST:
       if not request.user.is_authenticated:
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
+      if request.user.journal_set.filter(routine=routine).exists():
+        return render(request, "workouts/detail.html", { 'routine': routine, 'error_add_to_journal': 'Already added to journal'})
       entry = Journal(user=request.user, routine=routine)
       entry.save()
       return render(request, "workouts/detail.html", {'routine': routine, 'add_to_journal_success': "Added routine to journal"})
     if "like" in request.POST:
       if not request.user.is_authenticated:
         return render(request, 'workouts/detail.html', { 'routine': routine, 'error_like': "You must log in first"})
-      routine.likes = F('likes') + 1
-      routine.save()
+      # get row out of db
+      l = request.user.like_set.filter(routine=routine)
+      if l.exists():
+        routine.likes = F('likes') - 1
+        routine.save()
+        l.delete()
+      else:
+        routine.likes = F('likes') + 1
+        routine.save()
+        request.user.like_set.create(routine=routine)
       # reload the object to show the DB update
       routine = Routine.objects.filter(pk=routine_id).get()
       return render(request, "workouts/detail.html", {'routine': routine})
@@ -157,6 +187,7 @@ def detail(request, routine_id):
     # redirect anonymous users to login
     return HttpResponseRedirect(reverse('workouts:login'))
   else:
+    # TODO grey out add to journal if already in journal
     tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
     return render(request, 'workouts/detail.html', {
       'routine': routine,
@@ -275,6 +306,7 @@ def sort_by_likes(request):
   context = {'routine_list': highest_likes_routine_list}
   return render(request, 'workouts/index.html', context)
 
+# TODO created list of trending--reddit's hot mechanism
 def trending(request):
   trending_list = Routine.objects.order_by('-pub_date')[:10]
   context = {'routine_list': trending_list}

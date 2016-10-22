@@ -1,16 +1,29 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<h1>Workout Index</h1>
+<h1>{% block title %}Workout Index{% endblock %}</h1>
 <p><a href="{% url 'workouts:add_routine' %}">Add routine</a></p>
 
-{% if routine_list %}
-    <ul>
-    {% for routine in routine_list %}
-        <li><a href="{% url 'workouts:detail' routine.id %}">{{ routine.routine_title }}</a><span>  {{ routine.likes }}</span></li>
-    {% endfor %}
-    </ul>
+{% if list %}
+  {% for entry in list %}
+    <div>
+      <span><a href="{% url 'workouts:detail' entry.id %}">{{ entry.routine_title }}</a></span>
+      <span>{{ entry.likes }}</span>
+    </div>
+    <div>{{ entry.routine_text|truncatewords:10 }}</div>
+    <hr>
+  {% endfor %}
+  <div>
+    {% if prev_page %}
+      <span><a href="{% url 'workouts:index' %}?start={{ prev_start }}">Page {{ prev_page }}</a></span>
+    {% endif %}
+    <span><a>Page {{ current_page }}</a></span>
+    {% if next_page %}
+      <span><a href="{% url 'workouts:index' %}?start={{ next_start }}">Page {{ next_page }}</a></span>
+    {% endif %}
+  </div>
 {% else %}
     <p>No routines are available.</p>
 {% endif %}
+
 {% endblock content %}

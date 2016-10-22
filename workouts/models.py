@@ -67,3 +67,10 @@ class Journal(models.Model):
   completed_count = models.IntegerField(default=0)
   def __str__(self):
     return self.routine.routine_title
+
+class Like(models.Model):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  pub_date = models.DateTimeField(default=timezone.now)
+  def __str__(self):
+    return self.routine.routine_title, self.user.first_name

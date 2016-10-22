@@ -6,11 +6,11 @@
 <div>
   <form method="post">
     {% csrf_token %}
-    <input type="submit" name="like" value="Like {{ routine.likes }}" />
     {% if user.is_authenticated %}
+      <input type="submit" name="like" value="Like {{ routine.likes }}" />
       <input type="submit" name="add_to_journal" value="Add to journal" />
+      <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% endif %}
-    <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% if user == routine.created_by %}
       <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
       <input type="submit" name="delete_routine" value="Delete routine"/>
@@ -18,6 +18,7 @@
   </form>
 </div>
 <div>{{ error_delete }}</div>
+<div>{{ error_add_to_journal }}</div>
 <div>{{ add_to_journal_success }}</div>
 
 <div><pre>{{ routine.routine_text }}</pre></div>
