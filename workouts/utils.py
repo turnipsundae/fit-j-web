@@ -34,3 +34,6 @@ def valid_tag_list(tag_list):
 DIGIT_RE = re.compile(r'^[0-9]+$')
 def valid_digit(num):
   return num and DIGIT_RE.match(num)
+
+def get_page_num(start, results_per_page=10):
+  return int(start / results_per_page) + 1

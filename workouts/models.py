@@ -73,4 +73,4 @@ class Like(models.Model):
   routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
   pub_date = models.DateTimeField(default=timezone.now)
   def __str__(self):
-    return self.routine.routine_title, self.user.first_name
+    return self.routine.routine_title

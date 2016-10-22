@@ -10,35 +10,37 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .models import Routine, Comment, Journal
-from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit
+from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit, get_page_num
 
 
 # Create your views here.
 # TODO create recommendations based on likes
-# TODO add pages e.g. &start=10
+# TODO create search functionality
+# TODO convert index numbers to title of workouts
 def index(request):
+  RESULTS_PER_PAGE = 10
   if request.method == 'GET':
     s = request.GET.get('start', 0)
     if valid_digit(s):
       s = int(s)
     # get the current page results
-    routine_list = Routine.objects.order_by('-likes')[s:s+10]
+    routine_list = Routine.objects.order_by('-likes')[s:s+RESULTS_PER_PAGE]
     # get the current page number
-    current_page = int(s / 10) + 1
+    current_page = get_page_num(s)
+    # initialize params
+    params = {'list': routine_list, 'current_page': current_page}
     # check if next results and get next page number
-    results_remaining = Routine.objects.count() - s
+    results_remaining = Routine.objects.count() - RESULTS_PER_PAGE - s
     if results_remaining > 0:
-      next_start = s + 10
-      next_page = int(next_start / 10) + 1
+      next_start = s + RESULTS_PER_PAGE
+      params['next_start'] = next_start
+      params['next_page'] = get_page_num(next_start)
     # check if prev results and get prev page number
-    results_prev = s - 10
-    prev_page, prev_start = False, False
-    if results_prev >= 0:
-      prev_start = s - 10
-      prev_page = int(prev_start / 10) - 1
-    context = {'list': routine_list, 'current_page': current_page, 'next_page': next_page, 'prev_page': prev_page, 'next_start': next_start, 'prev_start': prev_start }
-    print (Routine.objects.count(), prev_start, prev_page)
-    return render(request, 'workouts/index.html', context)
+    prev_start = s - RESULTS_PER_PAGE
+    if prev_start >= 0:
+      params['prev_start'] = prev_start
+      params['prev_page'] = max(get_page_num(prev_start), 1)
+    return render(request, 'workouts/index.html', params)
 
 def login(request):
   if request.method == "POST":
@@ -47,7 +49,7 @@ def login(request):
     user = authenticate(username=username, password=password)
     if user is not None:
       auth_login(request, user)
-      return render(request, "workouts/index.html") 
+      return HttpResponseRedirect(reverse("workouts:index"))
     else:
       # return an 'invalid login' error message
       return render(request, "workouts/login.html", {
@@ -139,6 +141,7 @@ def results(request, routine_id):
   return HttpResponse(response % routine_id)
 
 
+# TODO add delete comment capability
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   if request.method == 'POST':
