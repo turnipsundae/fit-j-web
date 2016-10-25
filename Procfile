@@ -1,1 +1,1 @@
-web: gunicorn fitj.wsgi
+web: gunicorn fitj.wsgi --log-file -
