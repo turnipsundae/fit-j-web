@@ -93,8 +93,8 @@ def sign_up(request):
     user = User(first_name = first_name,
                 last_name = last_name,
                 email = email,
-                username = email,
-                password = password)
+                username = email)
+    user.set_password(password)
     user.save()
     # TODO add sign up success message to login
     return HttpResponseRedirect(reverse("workouts:login"))
