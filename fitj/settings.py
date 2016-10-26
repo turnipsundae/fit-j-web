@@ -30,6 +30,7 @@ DEBUG = True
 
 INSTALLED_APPS = [
     'workouts.apps.WorkoutsConfig',
+    'routines.apps.RoutinesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
