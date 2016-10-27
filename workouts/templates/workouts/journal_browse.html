@@ -1,6 +1,10 @@
 {% extends "./base.html" %}
 
 {% block content %}
+{% block journal_title %}
+<div><h1>{{ user.first_name }}'s Journal</h1></div>
+{% endblock %}
+
 <div><h1>Planned</h1></div>
 {% for entry in journal_planned %}
   <span>

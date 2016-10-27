@@ -113,7 +113,7 @@ def journal(request):
   journal_planned = journal.filter(completed_count=0)
   journal_completed = journal.filter(completed_count__gt=0)
 
-  params = dict(journal=journal, journal_planned=journal_planned, 
+  params = dict(journal_planned=journal_planned, 
                 journal_completed=journal_completed)
 
   if request.method == 'POST':
@@ -136,10 +136,7 @@ def journal(request):
       if 'remove_from_journal' in request.POST:
         entry.delete()
 
-  return render(request, "workouts/journal.html", {
-    'journal_planned' : journal_planned,
-    'journal_completed' : journal_completed,
-    })
+  return render(request, "workouts/journal.html", params)
 
 def results(request, routine_id):
   response = "You're looking at the results of routine %s."
@@ -332,7 +329,7 @@ def user_detail(request, user_id):
   journal_planned = journal.filter(completed_count=0)
   journal_completed = journal.filter(completed_count__gt=0)
 
-  params = dict(journal=journal, journal_planned=journal_planned, 
+  params = dict(user=user, journal_planned=journal_planned, 
                 journal_completed=journal_completed)
 
   return render(request, "workouts/journal_browse.html", params)
