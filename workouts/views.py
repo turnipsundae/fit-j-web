@@ -74,6 +74,7 @@ def sign_up(request):
   if request.method == "POST":
     first_name = request.POST['first_name']
     last_name = request.POST['last_name']
+    username = request.POST['username']
     email = request.POST['email']
     password = request.POST['password']
     error_exists = False
@@ -82,6 +83,9 @@ def sign_up(request):
     if not valid_name(first_name) or not valid_name(last_name):
       error_exists = True
       params['error_name'] = "Enter a first and last name using only letters, apostrophes and hyphens"
+    if not valid_username(username):
+      error_exists = True
+      params['error_username'] = "Enter a username using only letters, numbers, underscore and hyphens"
     if not valid_email(email):
       error_exists = True
       params['error_email'] = "Please enter in the format example@domain.com"
@@ -94,7 +98,7 @@ def sign_up(request):
     user = User(first_name = first_name,
                 last_name = last_name,
                 email = email,
-                username = email)
+                username = username)
     user.set_password(password)
     user.save()
     # TODO add sign up success message to login
