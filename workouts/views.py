@@ -17,6 +17,7 @@ from .utils import valid_name, valid_username, valid_password, valid_email, vali
 # TODO create recommendations based on likes
 # TODO create search functionality
 # TODO convert index numbers to title of workouts
+# TODO show other users' journals? Recently completed items.
 def index(request):
   RESULTS_PER_PAGE = 10
   if request.method == 'GET':
