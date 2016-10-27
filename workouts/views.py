@@ -322,8 +322,16 @@ def user(request):
   return render(request, 'workouts/user.html', context)
 
 def user_detail(request, user_id):
-  return HttpResponse("This is the user_detail page")
+  # TODO get_object_or_404?
+  user = get_object_or_404(User, pk=user_id)
+  journal = Journal.objects.filter(user=user)
+  journal_planned = journal.filter(completed_count=0)
+  journal_completed = journal.filter(completed_count__gt=0)
 
+  params = dict(journal=journal, journal_planned=journal_planned, 
+                journal_completed=journal_completed)
+
+  return render(request, "workouts/journal_browse.html", params)
 
 def follow_user(request, user_id):
   """
