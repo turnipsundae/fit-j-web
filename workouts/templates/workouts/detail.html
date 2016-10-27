@@ -11,7 +11,11 @@
     {% csrf_token %}
     {% if user.is_authenticated %}
       <input type="submit" name="like" value="Like {{ routine.likes }}" />
-      <input type="submit" name="add_to_journal" value="Add to journal" />
+      {% if routine_exists_in_journal is True %}
+        <input type="submit" name="mark_complete" value="Mark complete" />
+      {% else %}
+        <input type="submit" name="add_to_journal" value="Add to journal" />
+      {% endif %}
       <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% endif %}
     {% if user == routine.created_by %}

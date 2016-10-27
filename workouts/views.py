@@ -146,18 +146,27 @@ def results(request, routine_id):
 # TODO add delete comment capability
 def detail(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
+  params = dict(routine=routine)
+  if request.user.is_authenticated:
+    if request.user.journal_set.filter(routine=routine).exists():
+      params['routine_exists_in_journal'] = True
   if request.method == 'POST':
     if "add_to_journal" in request.POST:
       if not request.user.is_authenticated:
-        return render(request, 'workouts/detail.html', { 'routine': routine, 'error_add_to_journal': "You must log in first"})
+        params['error_add_to_journal'] = "You must log in first"
+        return render(request, 'workouts/detail.html', params)
       if request.user.journal_set.filter(routine=routine).exists():
-        return render(request, "workouts/detail.html", { 'routine': routine, 'error_add_to_journal': 'Already added to journal'})
+        params['error_add_to_journal'] = "Already added to journal"
+        return render(request, "workouts/detail.html", params)
       entry = Journal(user=request.user, routine=routine)
       entry.save()
-      return render(request, "workouts/detail.html", {'routine': routine, 'add_to_journal_success': "Added routine to journal"})
+      params['routine_exists_in_journal'] = True
+      params['add_to_journal_success'] = "Added routine to journal"
+      return render(request, "workouts/detail.html", params)
     if "like" in request.POST:
       if not request.user.is_authenticated:
-        return render(request, 'workouts/detail.html', { 'routine': routine, 'error_like': "You must log in first"})
+        params['error_like'] = "You must log in first"
+        return render(request, 'workouts/detail.html', params)
       # get row out of db
       l = request.user.like_set.filter(routine=routine)
       if l.exists():
@@ -169,13 +178,14 @@ def detail(request, routine_id):
         routine.save()
         request.user.like_set.create(routine=routine)
       # reload the object to show the DB update
-      routine = Routine.objects.filter(pk=routine_id).get()
-      return render(request, "workouts/detail.html", {'routine': routine})
+      params['routine'] = Routine.objects.filter(pk=routine_id).get()
+      return render(request, "workouts/detail.html", params)
     # TODO ask for confirmation to delete (pop-up)
     if "delete_routine" in request.POST:
       if request.user.is_authenticated:
         if request.user != routine.created_by:
-          return render(request, 'workouts/detail.html', { 'routine': routine, 'error_delete':"you aren't the creator of this routine"})
+          params['error_delete'] = "you aren't the creator of this routine"
+          return render(request, 'workouts/detail.html', params)
         routine.delete()
         return HttpResponseRedirect(reverse('workouts:index'))
     if "comment" in request.POST:
@@ -189,15 +199,19 @@ def detail(request, routine_id):
                                    comment_text=comment_text,
                                    pub_date=timezone.now())
         return HttpResponseRedirect(reverse('workouts:detail', args=[routine.id]))
+    if "mark_complete" in request.POST:
+      if not request.user.is_authenticated:
+        params['error_delete'] = "Add this routine to your journal before marking complete"
+        return render(request, 'workouts/detail.html', params)
+      entry = request.user.journal_set.filter(routine=routine)
+      entry.update(completed_count=F('completed_count') + 1)
+      return render(request, "workouts/detail.html", params)
+
     # redirect anonymous users to login
     return HttpResponseRedirect(reverse('workouts:login'))
   else:
-    # TODO grey out add to journal if already in journal
-    tag_list = " ".join(routine.tag_set.values_list('tag_text', flat=True))
-    return render(request, 'workouts/detail.html', {
-      'routine': routine,
-      'tag_list': tag_list,
-    })
+    params['tag_list'] = " ".join(routine.tag_set.values_list('tag_text', flat=True))
+    return render(request, 'workouts/detail.html', params)
 
 
 def get_routine_form_params(request):
