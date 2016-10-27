@@ -17,9 +17,10 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 import routines.views
+import workouts.views
 
 urlpatterns = [
-    url(r'^$', routines.views.index, name='index'),
+    url(r'^$', workouts.views.index, name='index'),
     url(r'^db/', routines.views.db, name='db'),
     url(r'^routines/', include('routines.urls')),
     url(r'^workouts/', include('workouts.urls')),

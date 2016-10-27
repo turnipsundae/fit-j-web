@@ -307,13 +307,13 @@ def add_exercise(request, routine_id):
 
 def sort_by_likes(request):
   highest_likes_routine_list = Routine.objects.order_by('-likes')[:10]
-  context = {'routine_list': highest_likes_routine_list}
+  context = {'list': highest_likes_routine_list}
   return render(request, 'workouts/index.html', context)
 
 # TODO created list of trending--reddit's hot mechanism
 def trending(request):
   trending_list = Routine.objects.order_by('-pub_date')[:10]
-  context = {'routine_list': trending_list}
+  context = {'list': trending_list}
   return render(request, 'workouts/index.html', context)
   
 def user(request):
