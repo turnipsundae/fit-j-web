@@ -4,7 +4,7 @@
 <div><h1>{{ routine.routine_title }}</h1></div>
 <div>
   <span>Created {{ routine.pub_date }} by </span>
-  <span><a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by }}</a></span>
+  <span><a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></span>
 </div>
 <div>
   <form method="post">
