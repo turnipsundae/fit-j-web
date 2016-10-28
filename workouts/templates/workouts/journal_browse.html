@@ -2,13 +2,13 @@
 
 {% block content %}
 {% block journal_title %}
-<div><h1>{{ user.first_name }}'s Journal</h1></div>
+<div class="page-header"><h1>{{ user.first_name }}'s Journal</h1></div>
 {% endblock %}
 
-<div><h1>Planned</h1></div>
+<div><h2>Planned</h2></div>
 {% for entry in journal_planned %}
   <span>
-    <div><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></div>
+    <div><h4><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></h4></div>
     <div>{{ entry.routine.routine_text|truncatewords:10 }}</div>
   </span>
   {% block journal_planned_buttons %}
@@ -16,14 +16,14 @@
   <hr>
 {% endfor %}
 
-<div><h1>Completed</h1></div>
+<div><h2>Completed</h2></div>
 {% for entry in journal_completed %}
-  <div><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></div>
-  <div>{{ entry.routine.routine_text|truncatewords:10 }}</div>
+  <div><h4><a href="{% url 'workouts:detail' entry.routine.id %}">{{ entry.routine.routine_title }}</a></h4></div>
   <div>
     <span>Last completed {{ entry.completed_on }}</span>
     <span>Total times completed {{ entry.completed_count }}<span>
   </div>
+  <div>{{ entry.routine.routine_text|truncatewords:10 }}</div>
   {% block journal_completed_buttons %}
   {% endblock %}
   <hr>

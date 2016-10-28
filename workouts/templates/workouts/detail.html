@@ -1,32 +1,36 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<div><h1>{{ routine.routine_title }}</h1></div>
+<div class="page-header"><h1>{{ routine.routine_title }}</h1></div>
 <div>
+  <p>
   <span>Created {{ routine.pub_date }} by </span>
   <span><a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></span>
+  </p>
 </div>
 <div>
+  <p>
   <form method="post">
     {% csrf_token %}
     {% if user.is_authenticated %}
-      <input type="submit" name="like" value="Like {{ routine.likes }}" />
+      <button type="submit" name="like" class="btn btn-xs btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
       {% if routine_exists_in_journal is True %}
-        <input type="submit" name="mark_complete" value="Mark complete" />
+        <button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button>
       {% else %}
-        <input type="submit" name="add_to_journal" value="Add to journal" />
+        <button type="submit" name="add_to_journal" class="btn btn-xs btn-default">Add to journal</button>
       {% endif %}
       <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% endif %}
     {% if user == routine.created_by %}
       <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
-      <input type="submit" name="delete_routine" value="Delete routine"/>
+      <button type="submit" name="delete_routine" class="btn btn-xs btn-default">Delete routine</button>
     {% endif %}
   </form>
+  </p>
 </div>
-<div>{{ error_delete }}</div>
-<div>{{ error_add_to_journal }}</div>
-<div>{{ add_to_journal_success }}</div>
+<div class="alert-info">{{ error_delete }}</div>
+<div class="alert-info">{{ error_add_to_journal }}</div>
+<div class="alert-success">{{ add_to_journal_success }}</div>
 
 <div><pre>{{ routine.routine_text }}</pre></div>
 
@@ -38,7 +42,7 @@
 </div>
 
 <div>
-  <h1>Comments</h1>
+  <h4>Comments</h4>
   {% for comment in routine.comment_set.all %}
     <div><strong>{{ comment.created_by }}</strong></div>
     <div>{{ comment.comment_text }}</div>
@@ -46,11 +50,11 @@
 </div>
 
 <div>
-  <h1>Leave a comment</h1>
+  <h4>Leave a comment</h4>
   <form method="post">
     {% csrf_token %}
     <div><textarea name="comment_text"></textarea></div>
-    <div><input type="submit" name="comment" value="Comment"/></div>
+    <div><button type="submit" name="comment" class="btn btn-md btn-default">Comment</button></div>
     <div>{{ error_text }}</div>
   </form>
 </div>

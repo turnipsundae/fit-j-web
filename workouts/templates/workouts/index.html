@@ -1,21 +1,21 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<h1>{% block title %}Workout Index{% endblock %}</h1>
-<p><a href="{% url 'workouts:add_routine' %}">Add routine</a></p>
+<div class="page-header"><h1>{% block title %}Workout Index{% endblock %}</h1></div>
+<p><button type="button" class="btn btn-sm btn-default"><a href="{% url 'workouts:add_routine' %}">Add routine</a></button></p>
 
 {% if list %}
   {% for entry in list %}
     <div>
-      <span><a href="{% url 'workouts:detail' entry.id %}">{{ entry.routine_title }}</a></span>
+      <h4><a href="{% url 'workouts:detail' entry.id %}">{{ entry.routine_title }}</a></h4>
+      <div>{{ entry.routine_text|truncatewords:10 }}</div>
       <span>{{ entry.likes }}</span>
     </div>
-    <div>{{ entry.routine_text|truncatewords:10 }}</div>
     <hr>
   {% endfor %}
   <div>
     {% if prev_page %}
-      <span><a href="{% url 'workouts:index' %}?start={{ prev_start }}">Page {{ prev_page }}</a></span>
+      <span><h4><a href="{% url 'workouts:index' %}?start={{ prev_start }}">Page {{ prev_page }}</a></h4></span>
     {% endif %}
     <span><a>Page {{ current_page }}</a></span>
     {% if next_page %}

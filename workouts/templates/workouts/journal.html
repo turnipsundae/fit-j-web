@@ -1,25 +1,29 @@
 {% extends "./journal_browse.html" %}
 
 {% block journal_title %}
-<div><h1>Your Journal</h1></div>
+<div class="page-header"><h1>Your Journal</h1></div>
 {% endblock %}
 
 {% block journal_planned_buttons %}
 <span>
-  <form method='post'>
-    {% csrf_token %}
-    <input type="hidden" name="entry_id" value="{{ entry.id }}" />
-    <span><input type="submit" name="mark_complete" value="Mark complete" /></span>
-    <span><input type="submit" name="remove_from_journal" value="Remove from journal" /></span>
-  </form>
+  <p>
+    <form method='post'>
+      {% csrf_token %}
+      <input type="hidden" name="entry_id" value="{{ entry.id }}" />
+      <span><button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button></span>
+      <span><button type="submit" name="remove_from_journal" class="btn btn-xs btn-default">Remove from journal</button></span>
+    </form>
+  </p>
 </span>
 {% endblock %}
 
 {% block journal_completed_buttons %}
-<form method='post'>
-  {% csrf_token %}
-  <input type="hidden" name="entry_id" value="{{ entry.id }}" />
-  <span><input type="submit" name="mark_complete" value="Mark complete" /></span>
-  <span><input type="submit" name="remove_from_journal" value="Remove from journal" /></span>
-</form>
+<p>
+  <form method='post'>
+    {% csrf_token %}
+    <input type="hidden" name="entry_id" value="{{ entry.id }}" />
+    <span><button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button></span>
+    <span><button type="submit" name="remove_from_journal" class="btn btn-xs btn-default">Remove from journal</button></span>
+  </form>
+</p>
 {% endblock %}
