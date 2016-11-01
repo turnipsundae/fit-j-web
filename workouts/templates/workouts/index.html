@@ -2,26 +2,32 @@
 
 {% block content %}
 <div class="page-header"><h1>{% block title %}Workout Index{% endblock %}</h1></div>
-<p><button type="button" class="btn btn-sm btn-default"><a href="{% url 'workouts:add_routine' %}">Add routine</a></button></p>
+<p><a class="btn btn-sm btn-default" href="{% url 'workouts:add_routine' %}">Add routine</a></p>
 
 {% if list %}
   {% for entry in list %}
-    <div>
-      <h4><a href="{% url 'workouts:detail' entry.id %}">{{ entry.routine_title }}</a></h4>
-      <div>{{ entry.routine_text|truncatewords:10 }}</div>
-      <span>{{ entry.likes }}</span>
+    <div class="row">
+      
+      <div class="col-xs-18 col-sm-12">
+        <h4><a href="{% url 'workouts:detail' entry.id %}">{{ entry.routine_title }}</a></h4>
+        <div>{{ entry.routine_text|truncatewords:10 }}</div>
+        <span>{{ entry.likes }}</span>
+        <hr>
+      </div>
     </div>
-    <hr>
   {% endfor %}
-  <div>
-    {% if prev_page %}
-      <span><h4><a href="{% url 'workouts:index' %}?start={{ prev_start }}">Page {{ prev_page }}</a></h4></span>
-    {% endif %}
-    <span><a>Page {{ current_page }}</a></span>
-    {% if next_page %}
-      <span><a href="{% url 'workouts:index' %}?start={{ next_start }}">Page {{ next_page }}</a></span>
-    {% endif %}
-  </div>
+  <nav>
+    <ul class="pager">
+      <li>Page {{ current_page }}</li>
+      {% if prev_page %}
+        <li><a href="{% url 'workouts:index' %}?start={{ prev_start }}{% if tags %}&tags={{ tags }}{% endif %}">Previous</a></li>
+      {% endif %}
+      {% if next_page %}
+        <li><a href="{% url 'workouts:index' %}?start={{ next_start }}{% if tags %}&tags={{ tags }}{% endif %}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  
 {% else %}
     <p>No routines are available.</p>
 {% endif %}

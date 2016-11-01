@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User 
 from django.contrib.auth.decorators import login_required
 
-from .models import Routine, Comment, Journal
+from .models import Routine, Comment, Journal, Tag
 from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit, get_page_num
 
 
@@ -22,17 +22,25 @@ def index(request):
   RESULTS_PER_PAGE = 10
   if request.method == 'GET':
     s = request.GET.get('start', 0)
+    tags = request.GET.get('tags', None)
     if valid_digit(s):
       s = int(s)
+    # if valid_digit(tags):
+    #   tags = int(tags)
     # get the current page results
-    routine_list = Routine.objects.order_by('-likes')[s:s+RESULTS_PER_PAGE]
+    if tags:
+      routine_list = Routine.objects.filter(tag__tag_text=tags).order_by("-like")[s:s + RESULTS_PER_PAGE]
+      results_remaining = Routine.objects.filter(tag__tag_text=tags).order_by("-like")[s + RESULTS_PER_PAGE:].exists()
+    else:
+      routine_list = Routine.objects.order_by("-like")[s:s + RESULTS_PER_PAGE]
+      results_remaining = Routine.objects.order_by("-like")[s + RESULTS_PER_PAGE:].exists()
     # get the current page number
     current_page = get_page_num(s)
     # initialize params
-    params = {'list': routine_list, 'current_page': current_page}
+    params = {'list': routine_list, 'current_page': current_page, 'tags': tags}
     # check if next results and get next page number
-    results_remaining = Routine.objects.count() - RESULTS_PER_PAGE - s
-    if results_remaining > 0:
+    # results_remaining = Routine.objects.count() - RESULTS_PER_PAGE - s
+    if results_remaining:
       next_start = s + RESULTS_PER_PAGE
       params['next_start'] = next_start
       params['next_page'] = get_page_num(next_start)
@@ -41,6 +49,7 @@ def index(request):
     if prev_start >= 0:
       params['prev_start'] = prev_start
       params['prev_page'] = max(get_page_num(prev_start), 1)
+    print (params)
     return render(request, 'workouts/index.html', params)
 
 def login(request):

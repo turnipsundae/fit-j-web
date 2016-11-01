@@ -37,7 +37,7 @@
 <div><h4>Tags</h4></div>
 <div>
   {% for tag in routine.tag_set.all %}
-    <span>{{ tag.tag_text }}<span>
+    <span><a class="badge" href="{% url 'workouts:index' %}?tags={{ tag.tag_text }}">{{ tag.tag_text }}</a></span>
   {% endfor %}
 </div>
 
