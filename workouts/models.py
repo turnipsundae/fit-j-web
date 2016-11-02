@@ -74,3 +74,5 @@ class Like(models.Model):
   pub_date = models.DateTimeField(default=timezone.now)
   def __str__(self):
     return self.routine.routine_title
+
+

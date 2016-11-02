@@ -38,8 +38,9 @@
         <div id="navbar" class="">
           <ul class="nav navbar-nav">
             <li><a href="{% url 'workouts:index' %}">Home</a></li>
-            <li><a href="{% url 'workouts:sort_by_likes' %}">Top 10</a></li>
-            <li><a href="{% url 'workouts:trending' %}">Trending</a></li>
+            <li><a href="{% url 'workouts:index' %}?sort=-pub_date">Recent</a></li>
+            <!-- <li><a href="{% url 'workouts:sort_by_likes' %}">Top</a></li> -->
+            <!-- <li><a href="{% url 'workouts:trending' %}">Trending</a></li> -->
             <li><a href="{% url 'workouts:user' %}">User</a></li>
             {% if user.is_authenticated %}
               <li><a href="{% url 'workouts:profile' %}">{{ user.first_name }}</a></li>

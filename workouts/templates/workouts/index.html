@@ -20,10 +20,10 @@
     <ul class="pager">
       <li>Page {{ current_page }}</li>
       {% if prev_page %}
-        <li><a href="{% url 'workouts:index' %}?start={{ prev_start }}{% if tags %}&tags={{ tags }}{% endif %}">Previous</a></li>
+        <li><a href="{% url 'workouts:index' %}?start={{ prev_start }}{% if tags %}&tags={{ tags }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Previous</a></li>
       {% endif %}
       {% if next_page %}
-        <li><a href="{% url 'workouts:index' %}?start={{ next_start }}{% if tags %}&tags={{ tags }}{% endif %}">Next</a></li>
+        <li><a href="{% url 'workouts:index' %}?start={{ next_start }}{% if tags %}&tags={{ tags }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Next</a></li>
       {% endif %}
     </ul>
   </nav>

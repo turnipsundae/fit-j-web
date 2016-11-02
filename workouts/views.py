@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .models import Routine, Comment, Journal, Tag
-from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit, get_page_num
+from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit, valid_routine_form, get_page_num
 
 
 # Create your views here.
@@ -23,21 +23,20 @@ def index(request):
   if request.method == 'GET':
     s = request.GET.get('start', 0)
     tags = request.GET.get('tags', None)
+    sort = request.GET.get('sort', '-likes')
     if valid_digit(s):
       s = int(s)
-    # if valid_digit(tags):
-    #   tags = int(tags)
     # get the current page results
     if tags:
-      routine_list = Routine.objects.filter(tag__tag_text=tags).order_by("-like")[s:s + RESULTS_PER_PAGE]
-      results_remaining = Routine.objects.filter(tag__tag_text=tags).order_by("-like")[s + RESULTS_PER_PAGE:].exists()
+      routine_list = Routine.objects.filter(tag__tag_text=tags).order_by(sort)[s:s + RESULTS_PER_PAGE]
+      results_remaining = Routine.objects.filter(tag__tag_text=tags).order_by(sort)[s + RESULTS_PER_PAGE:].exists()
     else:
-      routine_list = Routine.objects.order_by("-like")[s:s + RESULTS_PER_PAGE]
-      results_remaining = Routine.objects.order_by("-like")[s + RESULTS_PER_PAGE:].exists()
+      routine_list = Routine.objects.order_by(sort)[s:s + RESULTS_PER_PAGE]
+      results_remaining = Routine.objects.order_by(sort)[s + RESULTS_PER_PAGE:].exists()
     # get the current page number
     current_page = get_page_num(s)
     # initialize params
-    params = {'list': routine_list, 'current_page': current_page, 'tags': tags}
+    params = {'list': routine_list, 'current_page': current_page, 'tags': tags, 'sort': sort}
     # check if next results and get next page number
     # results_remaining = Routine.objects.count() - RESULTS_PER_PAGE - s
     if results_remaining:
@@ -181,7 +180,7 @@ def detail(request, routine_id):
       if l.exists():
         routine.likes = F('likes') - 1
         routine.save()
-        l.delete()
+        l.get().delete()
       else:
         routine.likes = F('likes') + 1
         routine.save()
@@ -222,28 +221,6 @@ def detail(request, routine_id):
     params['tag_list'] = " ".join(routine.tag_set.values_list('tag_text', flat=True))
     return render(request, 'workouts/detail.html', params)
 
-
-def get_routine_form_params(request):
-  routine_title = request.POST['routine_title']
-  routine_text = request.POST['routine_text']
-  tag_list = request.POST['tag_list']
-  return dict(routine_title=routine_title,routine_text=routine_text,
-              tag_list=tag_list, created_by=request.user)
-
-def valid_routine_form(request):
-  """Checks routine form for routine_title, routine_text, and tag_list. Returns tuple of an error check and params. Does not check for post method."""
-  params = get_routine_form_params(request)
-  error_exists = False
-  if not valid_title(params['routine_title']):
-    error_exists = True
-    params['error_title'] = "Enter a title under 70 characters long. Only letters and numbers allowed."
-  if not valid_content_input(params['routine_text']):
-    error_exists = True
-    params['error_text'] = "Enter details under 1000 characters long."
-  if not valid_tag_list(params['tag_list']):
-    error_exists = True
-    params['error_tag_list'] = "Tags should be at least 3 characters long using only letters and numbers. Separate tags with a space."
-  return (error_exists, params)
 
 @login_required()
 def add_routine(request):

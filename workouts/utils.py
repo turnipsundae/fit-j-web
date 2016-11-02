@@ -37,3 +37,25 @@ def valid_digit(num):
 
 def get_page_num(start, results_per_page=10):
   return int(start / results_per_page) + 1
+
+def get_routine_form_params(request):
+  routine_title = request.POST['routine_title']
+  routine_text = request.POST['routine_text']
+  tag_list = request.POST['tag_list']
+  return dict(routine_title=routine_title,routine_text=routine_text,
+              tag_list=tag_list, created_by=request.user)
+
+def valid_routine_form(request):
+  """Checks routine form for routine_title, routine_text, and tag_list. Returns tuple of an error check and params. Does not check for post method."""
+  params = get_routine_form_params(request)
+  error_exists = False
+  if not valid_title(params['routine_title']):
+    error_exists = True
+    params['error_title'] = "Enter a title under 70 characters long. Only letters and numbers allowed."
+  if not valid_content_input(params['routine_text']):
+    error_exists = True
+    params['error_text'] = "Enter details under 1000 characters long."
+  if not valid_tag_list(params['tag_list']):
+    error_exists = True
+    params['error_tag_list'] = "Tags should be at least 3 characters long using only letters and numbers. Separate tags with a space."
+  return (error_exists, params)

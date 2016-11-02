@@ -1,15 +1,39 @@
 from django.test import TestCase
 from django.utils import timezone
+from django.db.models import F
+from django.contrib.auth.models import User
 
 from .models import Routine
 
 import datetime
 
 # Create your tests here.
-class RoutineMethodTests(TestCase):
+class LikeMethodTests(TestCase):
 
-  def test_was_routine_text_empty(self):
+  def  test_like_increase_in_routine_equals_count_of_likes(self):
+    """routine.likes should equal Like.filter.count
     """
-    is_text_empty() should return True for text that is empty
-    """
-    pass
+    u = User(first_name = "John", last_name = "Smith", email = "jsmith@email.com", username = "jsmith")
+    u.save()
+    r = Routine(routine_title="test", routine_text="test body", created_by=u)
+    r.save()
+
+    # add 3 likes
+    for x in range(0,3):
+      u.like_set.create(routine=r)
+      r.likes = F("likes") + 1
+      r.save()
+
+    # reload the object to show the DB update
+    r = Routine.objects.filter(pk=r.id).get()
+    self.assertIs(r.likes, u.like_set.filter(routine=r).count())
+
+    # subtract 3 likes
+    for x in range(0,3):
+      u.like_set.filter(routine=r)[0].delete()
+      r.likes = F('likes') - 1
+      r.save()
+
+    # reload the object to show the DB update
+    r = Routine.objects.filter(pk=r.id).get()
+    self.assertIs(r.likes, u.like_set.filter(routine=r).count())
