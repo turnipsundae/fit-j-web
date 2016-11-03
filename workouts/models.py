@@ -76,3 +76,12 @@ class Like(models.Model):
     return self.routine.routine_title
 
 
+class Completed(models.Model):
+  # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  # routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+  journal_entry = models.ForeignKey(Journal, on_delete=models.CASCADE)
+  comment_text = models.TextField(max_length=1000)
+  completed_date = models.DateTimeField(default=timezone.now)
+  def __str__(self):
+    return str(self.completed_date)
+

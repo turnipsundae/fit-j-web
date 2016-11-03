@@ -17,4 +17,4 @@ DEBUG = False
 
 # Allow all host headers
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['fitj.herokuapp.com']
+ALLOWED_HOSTS = ['fitj.herokuapp.com', 'www.fit-j.com']
