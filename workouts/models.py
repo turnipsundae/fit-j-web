@@ -83,5 +83,4 @@ class Completed(models.Model):
   comment_text = models.TextField(max_length=1000)
   completed_date = models.DateTimeField(default=timezone.now)
   def __str__(self):
-    return str(self.completed_date)
-
+    return str(self.completed_date.date())

@@ -141,6 +141,7 @@ def journal(request):
         entry.completed_count = F('completed_count') + 1
         entry.completed_on = timezone.now()
         entry.save()
+        return HttpResponseRedirect(reverse("workouts:results", args=[entry_id]))
       if 'remove_from_journal' in request.POST:
         entry.delete()
 
