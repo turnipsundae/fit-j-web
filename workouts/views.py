@@ -9,7 +9,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User 
 from django.contrib.auth.decorators import login_required
 
-from .models import Routine, Comment, Journal, Tag
+from .models import Routine, Comment, Journal, Tag, Results
 from .utils import valid_name, valid_username, valid_password, valid_email, valid_title, valid_content_input, valid_tag_list, valid_digit, valid_routine_form, get_page_num
 
 
@@ -147,9 +147,18 @@ def journal(request):
 
   return render(request, "workouts/journal.html", params)
 
+@login_required()
 def results(request, routine_id):
-  response = "You're looking at the results of routine %s."
-  return HttpResponse(response % routine_id)
+  routine = get_object_or_404(Routine, pk=routine_id)
+  entry = Journal.objects.filter(user=request.user, routine__id=routine_id).get()
+  params = dict(routine=routine)
+  if request.method == "POST":
+    results_text = request.POST.get("results_text", "As prescribed")
+    entry.results_set.create(results_text=results_text)
+    return HttpResponse("Successfully recorded %s" % results_text)
+  else:
+    params['results'] = entry.results_set.all()
+    return render(request, "workouts/results.html", params)
 
 
 # TODO add delete comment capability
@@ -214,7 +223,7 @@ def detail(request, routine_id):
         return render(request, 'workouts/detail.html', params)
       entry = request.user.journal_set.filter(routine=routine)
       entry.update(completed_count=F('completed_count') + 1)
-      return render(request, "workouts/detail.html", params)
+      return HttpResponseRedirect(reverse("workouts:results", args=[routine.id]))
 
     # redirect anonymous users to login
     return HttpResponseRedirect(reverse('workouts:login'))

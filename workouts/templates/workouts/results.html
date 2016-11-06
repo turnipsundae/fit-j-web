@@ -1,1 +1,39 @@
-{% include "./template_form_routine.html" %}
+{% extends "./base.html" %}
+
+{% block content %}
+<div>
+  <h1>{% block title %}Results for{% endblock %}</h1>
+</div>
+
+<form method="post">
+{% csrf_token %}
+  <div class="row">
+    <div class="col-md-6">
+      <label for="results_text">Enter results here</label>
+      <textarea id="results_text" name="results_text"></textarea>
+      <span>{{ error_text }}</span>
+      <input type="submit" value="Submit"/>
+    </div>
+    <div class="col-md-6">
+      <label for="routine_text">{{ routine.routine_title }} original routine</label>
+      <pre id="routine_text">{{ routine.routine_text }}</pre>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Previous results:</h2>
+    </div>
+    {% if results %}
+      {% for r in results %}
+        <div class="col-md-6">
+          <div>{{ r.completed_date }}</div>
+          <div>{{ r.results_text }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-md-6">None</div>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}
