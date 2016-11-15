@@ -10,8 +10,9 @@
   <div class="row">
     <div class="col-md-6">
       <label for="results_text">Enter results here</label>
-      <textarea id="results_text" name="results_text"></textarea>
+      <textarea id="results_text" name="results_text" placeholder="e.g. as prescribed"></textarea>
       <span>{{ error_text }}</span>
+      <div class="alert-success">{{ record_results_success }}</div>
       <input type="submit" value="Submit"/>
     </div>
     <div class="col-md-6">

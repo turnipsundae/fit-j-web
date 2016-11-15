@@ -15,7 +15,8 @@
     {% if user.is_authenticated %}
       <button type="submit" name="like" class="btn btn-xs btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
       {% if routine_exists_in_journal is True %}
-        <button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button>
+        <!-- <button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button> -->
+        <a class="btn btn-xs btn-default" href="{% url 'workouts:results' routine.id %}">Mark complete</a>
       {% else %}
         <button type="submit" name="add_to_journal" class="btn btn-xs btn-default">Add to journal</button>
       {% endif %}

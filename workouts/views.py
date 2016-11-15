@@ -116,7 +116,6 @@ def sign_up(request):
 
 @login_required()
 def journal(request):
-  # TODO get_object_or_404?
   journal = Journal.objects.filter(user=request.user)
   journal_planned = journal.filter(completed_count=0)
   journal_completed = journal.filter(completed_count__gt=0)
@@ -137,11 +136,11 @@ def journal(request):
       entry_id = int(entry_id)
       entry = get_object_or_404(Journal, user=request.user, pk=entry_id)
 
-      if 'mark_complete' in request.POST:
-        entry.completed_count = F('completed_count') + 1
-        entry.completed_on = timezone.now()
-        entry.save()
-        return HttpResponseRedirect(reverse("workouts:results", args=[entry_id]))
+      # if 'mark_complete' in request.POST:
+      #   entry.completed_count = F('completed_count') + 1
+      #   entry.completed_on = timezone.now()
+      #   entry.save()
+      #   return HttpResponseRedirect(reverse("workouts:results", args=[entry_id]))
       if 'remove_from_journal' in request.POST:
         entry.delete()
 
@@ -151,13 +150,20 @@ def journal(request):
 def results(request, routine_id):
   routine = get_object_or_404(Routine, pk=routine_id)
   entry = Journal.objects.filter(user=request.user, routine__id=routine_id).get()
-  params = dict(routine=routine)
+  # entry = Journal.objects.filter(user=request.user, routine__id=routine_id)
+  params = dict(routine=routine, results=entry.results_set.all())
   if request.method == "POST":
-    results_text = request.POST.get("results_text", "As prescribed")
+    results_text = request.POST.get("results_text")
+    if not results_text:
+      results_text = "As prescribed"
     entry.results_set.create(results_text=results_text)
-    return HttpResponse("Successfully recorded %s" % results_text)
+    params['record_results_success'] = "Successfully recorded results"
+
+    entry.completed_count = F('completed_count') + 1
+    entry.save()
+
+    return render(request, "workouts/results.html", params)
   else:
-    params['results'] = entry.results_set.all()
     return render(request, "workouts/results.html", params)
 
 
