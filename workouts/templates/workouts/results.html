@@ -2,22 +2,22 @@
 
 {% block content %}
 <div>
-  <h1>{% block title %}Results for{% endblock %}</h1>
+  <h1>{% block title %}Results{% endblock %}</h1>
 </div>
 
 <form method="post">
 {% csrf_token %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
+      <label for="routine_text">{{ routine.routine_title }} original routine</label>
+      <pre id="routine_text">{{ routine.routine_text }}</pre>
+    </div>
+    <div class="col-md-12">
       <label for="results_text">Enter results here</label>
       <textarea id="results_text" name="results_text" placeholder="e.g. as prescribed"></textarea>
       <span>{{ error_text }}</span>
       <div class="alert-success">{{ record_results_success }}</div>
       <input type="submit" value="Submit"/>
-    </div>
-    <div class="col-md-6">
-      <label for="routine_text">{{ routine.routine_title }} original routine</label>
-      <pre id="routine_text">{{ routine.routine_text }}</pre>
     </div>
   </div>
 

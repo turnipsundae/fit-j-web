@@ -13,18 +13,27 @@
   <form method="post">
     {% csrf_token %}
     {% if user.is_authenticated %}
-      <button type="submit" name="like" class="btn btn-xs btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
+      <button type="submit" name="like" class="btn btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
       {% if routine_exists_in_journal is True %}
-        <!-- <button type="submit" name="mark_complete" class="btn btn-xs btn-default">Mark complete</button> -->
-        <a class="btn btn-xs btn-default" href="{% url 'workouts:results' routine.id %}">Mark complete</a>
+        <!-- Split button -->
+        <div class="btn-group">
+          <button type="submit" class="btn btn-default" name="mark_complete">Mark complete</a>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'workouts:results' routine.id %}"">Log results</a></li>
+          </ul>
+        </div>
       {% else %}
-        <button type="submit" name="add_to_journal" class="btn btn-xs btn-default">Add to journal</button>
+        <button type="submit" name="add_to_journal" class="btn btn-default">Add to journal</button>
       {% endif %}
-      <a class="btn btn-xs btn-default" href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
+      <a class="btn btn-default" href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% endif %}
     {% if user == routine.created_by %}
-      <a class="btn btn-xs btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
-      <button class="btn btn-xs btn-danger" type="submit" name="delete_routine">Delete routine</button>
+      <a class="btn btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
+      <button class="btn btn-danger" type="submit" name="delete_routine">Delete routine</button>
     {% endif %}
   </form>
   </p>
@@ -59,4 +68,5 @@
     <div>{{ error_text }}</div>
   </form>
 </div>
+
 {% endblock content %}

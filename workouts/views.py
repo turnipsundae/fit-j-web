@@ -229,7 +229,8 @@ def detail(request, routine_id):
         return render(request, 'workouts/detail.html', params)
       entry = request.user.journal_set.filter(routine=routine)
       entry.update(completed_count=F('completed_count') + 1)
-      return HttpResponseRedirect(reverse("workouts:results", args=[routine.id]))
+      entry.get().results_set.create(results_text="As prescribed")
+      return HttpResponseRedirect(reverse("workouts:detail", args=[routine.id]))
 
     # redirect anonymous users to login
     return HttpResponseRedirect(reverse('workouts:login'))
