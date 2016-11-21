@@ -20,11 +20,11 @@
       {% else %}
         <button type="submit" name="add_to_journal" class="btn btn-xs btn-default">Add to journal</button>
       {% endif %}
-      <a href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
+      <a class="btn btn-xs btn-default" href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
     {% endif %}
     {% if user == routine.created_by %}
-      <a href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
-      <button type="submit" name="delete_routine" class="btn btn-xs btn-default">Delete routine</button>
+      <a class="btn btn-xs btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
+      <button class="btn btn-xs btn-danger" type="submit" name="delete_routine">Delete routine</button>
     {% endif %}
   </form>
   </p>

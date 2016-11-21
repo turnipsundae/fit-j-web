@@ -17,3 +17,9 @@ textarea {
   border: 1px solid #ddd;
   border-radius: 15px;
 }
+
+.btn-danger {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
