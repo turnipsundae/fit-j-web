@@ -42,21 +42,28 @@
 <div class="alert-info">{{ error_add_to_journal }}</div>
 <div class="alert-success">{{ add_to_journal_success }}</div>
 
-<div><pre>{{ routine.routine_text }}</pre></div>
-
-<div><h4>Tags</h4></div>
-<div>
-  {% for tag in routine.tag_set.all %}
-    <span><a class="badge" href="{% url 'workouts:index' %}?tags={{ tag.tag_text }}">{{ tag.tag_text }}</a></span>
-  {% endfor %}
+<div class="row">
+  <div class="col-md-9">
+    <pre>{{ routine.routine_text }}</pre>
+  </div>
+  <div class="col-md-3">
+    <div>
+      {% for tag in routine.tag_set.all %}
+        <span><a class="badge" href="{% url 'workouts:index' %}?tags={{ tag.tag_text }}">{{ tag.tag_text }}</a></span>
+      {% endfor %}
+    </div>  
+  </div>
 </div>
 
+
 <div>
-  <h4>Comments</h4>
-  {% for comment in routine.comment_set.all %}
-    <div><strong>{{ comment.created_by }}</strong></div>
-    <div>{{ comment.comment_text }}</div>
-  {% endfor %}
+  {% if routine.comment_set.exists %}
+    <h4>Comments</h4>
+    {% for comment in routine.comment_set.all %}
+      <div><strong>{{ comment.created_by }}</strong></div>
+      <div>{{ comment.comment_text }}</div>
+    {% endfor %}
+  {% endif %}
 </div>
 
 <div>
