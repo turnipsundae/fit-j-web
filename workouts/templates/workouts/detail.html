@@ -1,17 +1,16 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<div class="page-header"><h1>{{ routine.routine_title }}</h1></div>
-<div>
-  <p>
-  <span>Created {{ routine.pub_date }} by </span>
-  <span><a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></span>
-  </p>
+<div class="page-header">
+  <h1>{{ routine.routine_title }}</h1>
+  <h4><small>Created {{ routine.pub_date }} by <a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></small></h4>
 </div>
+
 <div>
   <p>
   <form method="post">
     {% csrf_token %}
+
     {% if user.is_authenticated %}
       <button type="submit" name="like" class="btn btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
       {% if routine_exists_in_journal is True %}
@@ -35,14 +34,17 @@
       <a class="btn btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
       <button class="btn btn-danger" type="submit" name="delete_routine">Delete routine</button>
     {% endif %}
+
   </form>
   </p>
 </div>
+
 <div class="alert-info">{{ error_delete }}</div>
 <div class="alert-info">{{ error_add_to_journal }}</div>
 <div class="alert-success">{{ add_to_journal_success }}</div>
 
 <div class="row">
+  <div class="col-md-9"><h2>Original Workout</h2></div>
   <div class="col-md-9">
     <pre>{{ routine.routine_text }}</pre>
   </div>
@@ -56,24 +58,28 @@
 </div>
 
 
-<div>
-  {% if routine.comment_set.exists %}
-    <h4>Comments</h4>
-    {% for comment in routine.comment_set.all %}
-      <div><strong>{{ comment.created_by }}</strong></div>
-      <div>{{ comment.comment_text }}</div>
-    {% endfor %}
-  {% endif %}
-</div>
-
-<div>
-  <h4>Leave a comment</h4>
-  <form method="post">
-    {% csrf_token %}
-    <div><textarea name="comment_text"></textarea></div>
-    <div><button type="submit" name="comment" class="btn btn-md btn-default">Comment</button></div>
-    <div>{{ error_text }}</div>
-  </form>
+<div class="row">
+  <div class="col-md-9">
+    {% if routine.comment_set.exists %}
+      <h2>Comments</h2>
+      {% for comment in routine.comment_set.all %}
+        <p>
+          <a href="{% url 'workouts:user_detail' comment.created_by.id %}">
+            <strong>{{ comment.created_by }} </strong>
+          </a>
+          {{ comment.comment_text }}
+        </p>
+      {% endfor %}
+    {% endif %}
+    
+    <!-- <h4>Leave a comment</h4> -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group"><textarea name="comment_text" class="form-control" rows="3" placeholder="Leave a comment"></textarea></div>
+        <div><button type="submit" name="comment" class="btn btn-md btn-default">Comment</button></div>
+        <div>{{ error_text }}</div>
+      </form>
+  </div>
 </div>
 
 {% endblock content %}
