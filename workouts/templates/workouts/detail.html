@@ -1,62 +1,59 @@
 {% extends "./base.html" %}
 
 {% block content %}
-<div class="page-header">
-  <h1>{{ routine.routine_title }}</h1>
-  <h4><small>Created {{ routine.pub_date }} by <a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></small></h4>
+<div class="row">
+  <div class="col-md-12">
+    <h1>{{ routine.routine_title }}</h1>
+    <h4><small>Created {{ routine.pub_date }} by <a href="{% url 'workouts:user_detail' routine.created_by.id %}">{{ routine.created_by.first_name }}</a></small></h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-9">
+    <pre>{{ routine.routine_text }}</pre>
+  </div>
+  <div class="col-md-3">
+    {% for tag in routine.tag_set.all %}
+      <span><a class="badge" href="{% url 'workouts:index' %}?tags={{ tag.tag_text }}">{{ tag.tag_text }}</a></span>
+    {% endfor %}
+  </div>
 </div>
 
-<div>
-  <p>
-  <form method="post">
-    {% csrf_token %}
+<div class="row">
+  <div class="col-md-9">
+    <form method="post">
+      {% csrf_token %}
 
-    {% if user.is_authenticated %}
-      <button type="submit" name="like" class="btn btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
-      {% if routine_exists_in_journal is True %}
-        <!-- Split button -->
-        <div class="btn-group">
-          <button type="submit" class="btn btn-default" name="mark_complete">Mark complete</a>
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'workouts:results' routine.id %}"">Log results</a></li>
-          </ul>
-        </div>
-      {% else %}
-        <button type="submit" name="add_to_journal" class="btn btn-default">Add to journal</button>
+      {% if user.is_authenticated %}
+        <button type="submit" name="like" class="btn btn-default">Like <span class="badge">{{ routine.likes }}</span></button>
+        {% if routine_exists_in_journal is True %}
+          <!-- Split button -->
+          <div class="btn-group">
+            <button type="submit" class="btn btn-default" name="mark_complete">Mark complete</a></button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'workouts:results' routine.id %}"">Log results</a></li>
+            </ul>
+          </div>
+        {% else %}
+          <button type="submit" name="add_to_journal" class="btn btn-default">Add to journal</button>
+        {% endif %}
+        <a class="btn btn-default" href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
       {% endif %}
-      <a class="btn btn-default" href="{% url 'workouts:customize_routine' routine.id %}">Customize</a>
-    {% endif %}
-    {% if user == routine.created_by %}
-      <a class="btn btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
-      <button class="btn btn-danger" type="submit" name="delete_routine">Delete routine</button>
-    {% endif %}
+      {% if user == routine.created_by %}
+        <a class="btn btn-default" href="{% url 'workouts:edit_routine' routine.id %}">Edit</a>
+        <button class="btn btn-danger" type="submit" name="delete_routine">Delete routine</button>
+      {% endif %}
 
-  </form>
-  </p>
+    </form>
+  </div>
 </div>
 
 <div class="alert-info">{{ error_delete }}</div>
 <div class="alert-info">{{ error_add_to_journal }}</div>
 <div class="alert-success">{{ add_to_journal_success }}</div>
-
-<div class="row">
-  <div class="col-md-9"><h2>Original Workout</h2></div>
-  <div class="col-md-9">
-    <pre>{{ routine.routine_text }}</pre>
-  </div>
-  <div class="col-md-3">
-    <div>
-      {% for tag in routine.tag_set.all %}
-        <span><a class="badge" href="{% url 'workouts:index' %}?tags={{ tag.tag_text }}">{{ tag.tag_text }}</a></span>
-      {% endfor %}
-    </div>  
-  </div>
-</div>
-
 
 <div class="row">
   <div class="col-md-9">
@@ -72,7 +69,6 @@
       {% endfor %}
     {% endif %}
     
-    <!-- <h4>Leave a comment</h4> -->
       <form method="post">
         {% csrf_token %}
         <div class="form-group"><textarea name="comment_text" class="form-control" rows="3" placeholder="Leave a comment"></textarea></div>
