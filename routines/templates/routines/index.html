@@ -1,0 +1,52 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<div class="page-header"><h1>{% block title %}WODs{% endblock %}</h1></div>
+
+<div class="wod-block">
+  <div class="wod-title">Fran</div>
+  <div class="wod-description">
+    <ul class="list-unstyled">
+      21 thrusters 75/95 lbs<br>
+      21 pull ups<br>
+      15 thrusters 75/95 lbs<br>
+      15 pull ups<br>
+      9  thrusters 75/95 lbs<br>
+      9  pull ups
+    </ul>
+  </div>
+  <div class="wod-type">
+    For time
+  </div>
+  <div class="wod-result-stats">
+    <table class="table table-hover"> 
+      <caption>Typical WOD results based on crossfit.com entries.</caption> 
+      <thead> 
+        <tr> 
+          <th>Scale</th> 
+          <th>Low</th> 
+          <th>High</th> 
+        </tr> 
+      </thead> 
+      <tbody> 
+        <tr>
+          <th scope="row">Rx'd Male</th> 
+          <td>4:30</td> 
+          <td>5:30</td> 
+        </tr> 
+        <tr> 
+          <th scope="row">Rx'd Female</th> 
+          <td>5:00</td> 
+          <td>5:45</td> 
+        </tr>
+        <tr> 
+          <th scope="row">Rx'd Masters</th> 
+          <td>6:00</td>
+          <td>7:30</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock content %}
