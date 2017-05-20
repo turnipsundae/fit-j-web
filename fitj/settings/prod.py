@@ -20,4 +20,4 @@ DEBUG = False
 ALLOWED_HOSTS = ['fitj.herokuapp.com', 'www.fit-j.com']
 
 # broker url for RabbitMQ broker for Celery
-app.conf.update(BROKER_URL=os.environ['CLOUDAMQP_URL'])
+BROKER_URL=os.environ['CLOUDAMQP_URL']
